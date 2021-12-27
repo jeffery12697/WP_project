@@ -1,52 +1,107 @@
 import express from 'express'
-//import ScoreCard from '../models/ScoreCard.js'
+import User from '../models/User'
+import Vcode from '../models/Vcode'
+import nodemailer from 'nodemailer'
+import dotenv from "dotenv-defaults";
+
+dotenv.config();
+
+// generate vcode
+function makevcode(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
 
 const router = express.Router()
 
-/*router.delete('/clear-db', async (_, res) => {
-    try {
-        await ScoreCard.deleteMany({})
-        res.json({message: 'Database cleared'})
-    } catch (e) { throw new Error("Database deletion failed")}
-})
-
-router.post('/create-card', async (req, res) => {
-    const name = req.body.name
-    const subject = req.body.subject
-    const score = req.body.score
-    const existing = await ScoreCard.findOne({ name: name, subject: subject })
-    if (existing) {
+router.post('/user/set_verify_code', async (req, res) => {
+    const email = req.query.mail
+    const vcode = makevcode(6)
+    
+    if (await Vcode.findOne({ email: email })) {
         try {
-            await ScoreCard.updateOne({ name: name, subject: subject }, { $set: { score: score }})
-            res.json({message: 'Updating ('+name+', '+subject+', '+score+')', card: true})
-        } catch (e) { throw new Error("ScoreCard update error")}
+            await Vcode.updateOne({ email: email }, { $set: { vcode: vcode }})
+        } catch(e) { throw new Error("Verification code update error")}
     } else {
         try {
-            const newScoreCard = new ScoreCard({ name, subject, score })
-            res.json({message: 'Adding ('+name+', '+subject+', '+score+')', card: newScoreCard.save()})
-        } catch (e) { throw new Error("ScoreCard creation error")}
+            const newVcode = new Vcode({ email, vcode })
+            await newVcode.save()
+        } catch (e) { throw new Error("Verification code creation error")}
     }
-})
 
-router.get('/query-cards', async (req, res) => {
-    const queryType = req.query.type
-    const queryString = req.query.queryString
-    let messages = null
-    if (queryType === "name") {
-        messages = await ScoreCard.find({ name: queryString })
-    } else {
-        messages = await ScoreCard.find({ subject: queryString })
-    }
-    const message = queryType + ' (' + queryString + ') not found!'
-    if (messages.length === 0) {
-        messages = null;
-    } else {
-        for (let i=0; i<messages.length; i++) {
-            let text = '(' + messages[i].name + ', ' + messages[i].subject + ', ' + messages[i].score + ')'
-            messages[i] = text
+    var transporter = nodemailer.createTransport({
+        service: 'outlook',
+        auth: {
+          user: process.env.EMAIL_ADDRESS,
+          pass: process.env.EMAIL_PASSWORD
         }
+    })
+      
+    var mailOptions = {
+        from: process.env.EMAIL_ADDRESS,
+        to: email,
+        subject: 'KaoGuTi Website verification code',
+        text: 'Your verification code is: ' + vcode
     }
-    res.json({messages: messages, message: message})
-})*/
+      
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+    })
+
+    res.json({msg: 'Verificaiton code sent to ' + email})
+})
+
+router.post('/user/register', async (req, res) => {
+    const email = req.query.mail
+    const vcode = req.query.vcode
+    const username = req.query.username
+    const password = req.query.password
+    if (!vcode) {
+        res.status(400).send({ msg: "Didn't click verify button!" })
+        return
+    }
+    if (await Vcode.findOne({ email: email, vcode: vcode })) {
+        await Vcode.deleteOne({email: email, vcode: vcode})
+    } else {
+        res.status(400).send({ msg: 'Wrong verify code!'})
+        return
+    }
+    if (await User.findOne({ username: username })) {
+        res.status(400).send({ msg: 'username exist!' })
+        return
+    }
+    if (await User.findOne({ email: email })) {
+        res.status(400).send({ msg: 'email exist!' })
+        return
+    }
+    try {
+        const newUser = new User({ username, email, password })
+        await newUser.save()
+        res.json({msg: 'User created'})
+    } catch (e) { throw new Error("User creation error")}
+})
+
+router.post('/user/login', async (req, res) => {
+    const username = req.query.username
+    const password = req.query.password
+    if (!(await User.findOne({ username: username }))) {
+        res.status(400).send({ msg: "Username doesn't exist" })
+        return
+    }
+    if (await User.findOne({ username: username, password: password })) {
+        res.json({ msg: 'Success!' })
+        return
+    }
+    res.status(400).send({ msg: 'Incorrect password' })
+})
 
 export default router
