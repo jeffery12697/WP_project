@@ -2,7 +2,8 @@ import express from 'express'
 import User from '../models/User'
 import Vcode from '../models/Vcode'
 import nodemailer from 'nodemailer'
-import dotenv from "dotenv-defaults";
+import dotenv from "dotenv-defaults"
+import bcrypt from "bcrypt"
 
 dotenv.config();
 
@@ -64,7 +65,7 @@ router.post('/user/register', async (req, res) => {
     const email = req.query.mail
     const vcode = req.query.vcode
     const username = req.query.username
-    const password = req.query.password
+    const password = await bcrypt.hash(req.query.password,10)
     if (!vcode) {
         res.status(400).send({ msg: "Didn't click verify button!" })
         return
@@ -93,15 +94,16 @@ router.post('/user/register', async (req, res) => {
 router.post('/user/login', async (req, res) => {
     const username = req.query.username
     const password = req.query.password
-    if (!(await User.findOne({ username: username }))) {
-        res.status(400).send({ msg: "Username doesn't exist" })
+    const user = await User.findOne({ username: username })
+    if (user) {
+        if (await bcrypt.compare(password, user.password)) {
+            res.json({ msg: 'Success!' })
+            return
+        }
+        res.status(400).send({ msg: 'Incorrect password' })
         return
     }
-    if (await User.findOne({ username: username, password: password })) {
-        res.json({ msg: 'Success!' })
-        return
-    }
-    res.status(400).send({ msg: 'Incorrect password' })
+    res.status(400).send({ msg: "Username doesn't exist" })
 })
 
 export default router
