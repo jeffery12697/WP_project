@@ -1,9 +1,13 @@
 import express from 'express'
-import User from '../models/User'
-import Vcode from '../models/Vcode'
 import nodemailer from 'nodemailer'
 import dotenv from "dotenv-defaults"
 import bcrypt from "bcrypt"
+import User from '../models/User'
+import Vcode from '../models/Vcode'
+import { v4 as uuidv4 } from 'uuid'
+import Course from '../models/Course'
+import Problem from '../models/Problem'
+import Answer from '../models/Answer'
 
 dotenv.config();
 
@@ -104,6 +108,51 @@ router.post('/user/login', async (req, res) => {
         return
     }
     res.status(400).send({ msg: "Username doesn't exist" })
+})
+
+router.post('/create/course', async (req, res) => {
+    const course_name = req.query.course_name
+    const course_id = uuidv4()
+    try {
+        const newCourse = new Course({ course_name, course_id })
+        await newCourse.save()
+        res.json({msg: 'Course created'})
+    } catch (e) { throw new Error("Course creation error")}
+})
+
+router.post('/create/problem', async (req, res) => {
+    const course_id = req.query.course_id
+    const problem_id = uuidv4()
+    const title = req.query.title
+    const description = req.query.description
+    const tags = req.query.tags
+    const teacher = req.query.teacher
+    const publisher = req.query.publisher
+    const likes = []
+    const content = req.query.answer
+    try {
+        const newProblem = new Problem({ course_id, problem_id, title, description, tags, teacher, publisher, likes })
+        await newProblem.save()
+        if (content) {
+            const answer_id = uuidv4()
+            const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes})
+            await newAnswer.save()
+        }
+        res.json({msg: 'Problem created'})
+    } catch (e) { throw new Error("Problem creation error")}
+})
+
+router.post('/create/answer', async (req, res) => {
+    const problem_id = req.query.problem_id
+    const answer_id = uuidv4()
+    const content = req.query.content
+    const publisher = req.query.publisher
+    const likes = []
+    try {
+        const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes})
+        await newAnswer.save()
+        res.json({msg: 'Answer created'})
+    } catch (e) { throw new Error("Answer creation error")}
 })
 
 export default router
