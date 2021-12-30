@@ -40,7 +40,7 @@ router.post('/user/set_verify_code', async (req, res) => {
     }
 
     var transporter = nodemailer.createTransport({
-        service: 'outlook',
+        service: process.env.EMAIL_SERVICE,
         auth: {
           user: process.env.EMAIL_ADDRESS,
           pass: process.env.EMAIL_PASSWORD
@@ -153,6 +153,97 @@ router.post('/create/answer', async (req, res) => {
         await newAnswer.save()
         res.json({msg: 'Answer created'})
     } catch (e) { throw new Error("Answer creation error")}
+})
+
+router.get('/search', async (req, res) => {
+    const search_name = req.query.course_name
+    const courses = await Course.find({course_name: {$regex: search_name}})
+    for (let i=0; i<courses.length; i++) {
+        courses[i] = {course_name: courses[i].course_name, course_id: courses[i].course_id}
+    }
+    res.json(courses)
+})
+
+router.get('/search/course', async (req, res) => {
+    const course_id = req.query.course_id
+    const teacher = req.query.teacher
+    const tags = req.query.tags
+    const username = req.query.username
+    const problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}})
+    for (let i=0; i<problems.length; i++) {
+        problems[i] = {problem_id: problems[i].problem_id,
+            title: problems[i].title,
+            teacher: problems[i].teacher,
+            likes_num: problems[i].likes.length,
+            tags: problems[i].tags,
+            publisher: problems[i].publisher,
+            able_to_like: !(problems[i].likes.includes(username))
+        }
+    }
+    res.json(problems)
+})
+
+router.get('/problem', async (req, res) => {
+    const problem_id = req.query.problem_id
+    const username = req.query.username
+    const problem = await Problem.findOne({problem_id: problem_id})
+    const answers = await Answer.find({problem_id: problem_id})
+    for (let i=0; i<answers.length; i++) {
+        answers[i] = {answer_id: answers[i].answer_id,
+            content: answers[i].content,
+            publisher: answers[i].publisher,
+            likes_num: answers[i].likes.length,
+            able_to_like: !(answers[i].likes.includes(username))
+        }
+    }
+    res.json({
+        title: problem.title,
+        description: problem.description,
+        teacher: problem.teacher,
+        publisher: problem.publisher,
+        tags: problem.tags,
+        likes_num: problem.likes.length,
+        able_to_like: !(problem.likes.includes(username)),
+        answers: answers
+    })
+})
+
+router.post('/like/problem', async(req, res) => {
+    const problem_id = req.query.problem_id
+    const username = req.query.username
+    try {
+        const problem = await Problem.findOne({ problem_id: problem_id })
+        if (problem.likes.includes(username)) {
+            problem.likes = problem.likes.filter((user) => {
+                return user !== username
+            })
+            res.json({msg: 'unliked'})
+        } else {
+            problem.likes.push(username)
+            res.json({msg: 'liked'})
+        }
+        const likes = problem.likes
+        await Problem.updateOne({ problem_id: problem_id }, { $set: { likes: likes }})
+    } catch (e) { throw new Error("Problem liking error")}
+})
+
+router.post('/like/answer', async(req, res) => {
+    const answer_id = req.query.answer_id
+    const username = req.query.username
+    try {
+        const answer = await Answer.findOne({ answer_id: answer_id })
+        if (answer.likes.includes(username)) {
+            answer.likes = answer.likes.filter((user) => {
+                return user !== username
+            })
+            res.json({msg: 'unliked'})
+        } else {
+            answer.likes.push(username)
+            res.json({msg: 'liked'})
+        }
+        const likes = answer.likes
+        await Answer.updateOne({ answer_id: answer_id }, { $set: { likes: likes }})
+    } catch (e) { throw new Error("Answer liking error")}
 })
 
 export default router
