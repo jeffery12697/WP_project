@@ -74,9 +74,7 @@ router.post('/user/register', async (req, res) => {
         res.status(400).send({ msg: "Didn't click verify button!" })
         return
     }
-    if (await Vcode.findOne({ email: email, vcode: vcode })) {
-        await Vcode.deleteOne({email: email, vcode: vcode})
-    } else {
+    if (!(await Vcode.findOne({ email: email, vcode: vcode }))) {
         res.status(400).send({ msg: 'Wrong verify code!'})
         return
     }
@@ -92,6 +90,7 @@ router.post('/user/register', async (req, res) => {
         const newUser = new User({ username, email, password })
         await newUser.save()
         res.json({msg: 'User created'})
+        await Vcode.deleteOne({email: email, vcode: vcode})
     } catch (e) { throw new Error("User creation error")}
 })
 
