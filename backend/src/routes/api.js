@@ -25,7 +25,7 @@ function makevcode(length) {
 const router = express.Router()
 
 router.post('/user/set_verify_code', async (req, res) => {
-    const email = req.query.mail
+    const email = req.body.mail
     const vcode = makevcode(6)
     
     if (await Vcode.findOne({ email: email })) {
@@ -66,10 +66,10 @@ router.post('/user/set_verify_code', async (req, res) => {
 })
 
 router.post('/user/register', async (req, res) => {
-    const email = req.query.mail
-    const vcode = req.query.vcode
-    const username = req.query.username
-    const password = await bcrypt.hash(req.query.password,10)
+    const email = req.body.mail
+    const vcode = req.body.vcode
+    const username = req.body.username
+    const password = await bcrypt.hash(req.body.password,10)
     if (!vcode) {
         res.status(400).send({ msg: "Didn't click verify button!" })
         return
@@ -95,8 +95,8 @@ router.post('/user/register', async (req, res) => {
 })
 
 router.post('/user/login', async (req, res) => {
-    const username = req.query.username
-    const password = req.query.password
+    const username = req.body.username
+    const password = req.body.password
     const user = await User.findOne({ username: username })
     if (user) {
         if (await bcrypt.compare(password, user.password)) {
@@ -110,7 +110,7 @@ router.post('/user/login', async (req, res) => {
 })
 
 router.post('/create/course', async (req, res) => {
-    const course_name = req.query.course_name
+    const course_name = req.body.course_name
     const course_id = uuidv4()
     try {
         const newCourse = new Course({ course_name, course_id })
@@ -120,15 +120,15 @@ router.post('/create/course', async (req, res) => {
 })
 
 router.post('/create/problem', async (req, res) => {
-    const course_id = req.query.course_id
+    const course_id = req.body.course_id
     const problem_id = uuidv4()
-    const title = req.query.title
-    const description = req.query.description
-    const tags = req.query.tags
-    const teacher = req.query.teacher
-    const publisher = req.query.publisher
+    const title = req.body.title
+    const description = req.body.description
+    const tags = req.body.tags
+    const teacher = req.body.teacher
+    const publisher = req.body.publisher
     const likes = []
-    const content = req.query.answer
+    const content = req.body.answer
     try {
         const newProblem = new Problem({ course_id, problem_id, title, description, tags, teacher, publisher, likes })
         await newProblem.save()
@@ -142,10 +142,10 @@ router.post('/create/problem', async (req, res) => {
 })
 
 router.post('/create/answer', async (req, res) => {
-    const problem_id = req.query.problem_id
+    const problem_id = req.body.problem_id
     const answer_id = uuidv4()
-    const content = req.query.content
-    const publisher = req.query.publisher
+    const content = req.body.content
+    const publisher = req.body.publisher
     const likes = []
     try {
         const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes})
@@ -155,7 +155,7 @@ router.post('/create/answer', async (req, res) => {
 })
 
 router.get('/search', async (req, res) => {
-    const search_name = req.query.course_name
+    const search_name = req.body.course_name
     const courses = await Course.find({course_name: {$regex: search_name}})
     for (let i=0; i<courses.length; i++) {
         courses[i] = {course_name: courses[i].course_name, course_id: courses[i].course_id}
@@ -164,11 +164,14 @@ router.get('/search', async (req, res) => {
 })
 
 router.get('/search/course', async (req, res) => {
-    const course_id = req.query.course_id
-    const teacher = req.query.teacher
-    const tags = req.query.tags
-    const username = req.query.username
-    const problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}})
+    const course_id = req.body.course_id
+    const teacher = req.body.teacher
+    const tags = req.body.tags
+    const username = req.body.username
+    let problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}})
+    if (tags.length===0) {
+        problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}})
+    }
     for (let i=0; i<problems.length; i++) {
         problems[i] = {problem_id: problems[i].problem_id,
             title: problems[i].title,
@@ -183,8 +186,8 @@ router.get('/search/course', async (req, res) => {
 })
 
 router.get('/problem', async (req, res) => {
-    const problem_id = req.query.problem_id
-    const username = req.query.username
+    const problem_id = req.body.problem_id
+    const username = req.body.username
     const problem = await Problem.findOne({problem_id: problem_id})
     const answers = await Answer.find({problem_id: problem_id})
     for (let i=0; i<answers.length; i++) {
@@ -208,8 +211,8 @@ router.get('/problem', async (req, res) => {
 })
 
 router.post('/like/problem', async(req, res) => {
-    const problem_id = req.query.problem_id
-    const username = req.query.username
+    const problem_id = req.body.problem_id
+    const username = req.body.username
     try {
         const problem = await Problem.findOne({ problem_id: problem_id })
         if (problem.likes.includes(username)) {
@@ -227,8 +230,8 @@ router.post('/like/problem', async(req, res) => {
 })
 
 router.post('/like/answer', async(req, res) => {
-    const answer_id = req.query.answer_id
-    const username = req.query.username
+    const answer_id = req.body.answer_id
+    const username = req.body.username
     try {
         const answer = await Answer.findOne({ answer_id: answer_id })
         if (answer.likes.includes(username)) {
