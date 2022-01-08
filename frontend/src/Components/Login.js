@@ -1,0 +1,111 @@
+import { useState } from 'react';
+import { Form, Input, Button, Checkbox, Space, Card, message } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+// import { getMail, loginCheck } from '../api/User';
+
+
+const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail }) => {
+	const [email, setEmail] = useState("initialState");
+	const [password, setPassword] = useState("initialState");
+
+	const Submit = async (values) => {
+		//去後端根據電子郵件拿密碼
+		// const data = await loginCheck(values.username, values.password)
+		// switch (data) {
+		// 	case "Liar.":
+		// 		message.error("Liar...", 3)
+		// 		break;
+		// 	case "Good.":
+		// 		message.success("登入成功")
+		// 		setIsLogin(true);
+		// 		setMemberName(values.username);
+		// 		const mail = await getMail(values.username);
+		// 		setMemberMail(mail)
+		// 		break;
+		// }
+	};
+
+
+	const onChange_Email = (e) => {
+		setEmail(e.target.value)
+	}
+	const onChange_Password = (e) => {
+		setPassword(e.target.value)
+	}
+
+	const onClickRegister = (e) => {
+		e.preventDefault();
+		setLoginOrRegister("register")
+	}
+
+	return (
+		<div className="site-card-border-less-wrapper">
+			<Card title="登入" bordered={true} style={{ width: 300 }}>
+				<Form
+					name="normal_login"
+					className="login-form"
+					initialValues={{
+						remember: true,
+					}}
+					onFinish={Submit}
+				>
+					<Form.Item
+						name="username"
+						rules={[
+							{
+								required: true,
+								message: '請輸入您的暱稱!',
+								whitespace: true,
+							},
+						]}
+					>
+						<Input
+							prefix={<UserOutlined className="site-form-item-icon" />}
+							placeholder="使用者姓名"
+							onChange={onChange_Email}
+						/>
+					</Form.Item>
+					<Form.Item
+						name="password"
+						rules={[
+							{
+								required: true,
+								message: '請輸入你的密碼!',
+							},
+						]}
+					>
+
+						<Input
+							prefix={<LockOutlined className="site-form-item-icon" />}
+							type="password"
+							placeholder="密碼"
+							onChange={onChange_Password}
+						/>
+					</Form.Item>
+					<Form.Item>
+						<Form.Item name="remember" valuePropName="checked" noStyle>
+							<Checkbox>記住我</Checkbox>
+						</Form.Item>
+
+						{/* <a className="login-form-forgot" href="">
+				忘記密碼
+				</a> */}
+					</Form.Item>
+
+					<Form.Item>
+						<Space>
+							<Button type="primary" htmlType="submit" className="login-form-button" onClick>
+								登入
+							</Button>
+							<p>
+							</p>
+							<a onClick={onClickRegister}> 沒有帳號?馬上註冊!</a>
+						</Space>
+					</Form.Item>
+				</Form>
+			</Card>
+		</div>
+	);
+};
+
+export default Login;
