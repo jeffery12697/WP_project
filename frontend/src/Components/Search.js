@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Scroll from './Scroll';
 import CourseSearchList from './CourseSearchList';
 
-function Search({ details }) {
+function Search({ details, setCourseName }) {
 
   const [searchField, setSearchField] = useState("");
 
@@ -28,7 +28,7 @@ function Search({ details }) {
   function searchList() {
     return (
       <Scroll>
-        <CourseSearchList filteredCourses={filteredCourses} />
+        <CourseSearchList filteredCourses={filteredCourses} setCourseName={setCourseName}/>
       </Scroll>
     );
   }

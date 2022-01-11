@@ -24,15 +24,15 @@ function App() {
   return (
     <div className="App">
       <Router>
+          <div className="navbar">
+            <Navbar memberName={memberName} isLogin={isLogin}
+                    setMemberName={setMemberName} setIsLogin={setIsLogin}
+            />
+          </div>
         <Routes>
           <Route exact path="/" element={
             <div className="tc bg-gray ma0 pa4 min-vh-100">
-            <div className="navbar">
-            <Navbar memberName={memberName} isLogin={isLogin}
-                setMemberName={setMemberName} setIsLogin={setIsLogin}
-            />
-            </div>
-            <SearchCourse />
+            <SearchCourse  setCourseName={setCourseName}/>
             </div>
           }
           />
@@ -43,9 +43,10 @@ function App() {
           }/>
           <Route path="/createProblem" element={
             <div className="tc bg-gray ma0 pa4 min-vh-100">
-            <CreateProblem/>
+            <CreateProblem courseName={courseName} setCourseName={setCourseName}/>
             </div>
           }/>
+
         </Routes>
       </Router>
     </div>

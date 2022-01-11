@@ -1,8 +1,8 @@
 import React from 'react';
 import Card from './Card';
 
-function CourseSearchList({ filteredCourses }) {
-  const filtered = filteredCourses.map(course =>  <Card key={course.id} course={course} />); 
+function CourseSearchList({ filteredCourses, setCourseName}) {
+  const filtered = filteredCourses.map(course =>  <Card key={course.id} course={course} setCourseName={setCourseName} />); 
   return (
     <div>
       {filtered}

@@ -2,7 +2,7 @@ import { useState,useEffect } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import katex from 'katex';
 import 'katex/dist/katex.css'
-import { Typography, Button } from 'antd'
+import { Typography, Button, Input} from 'antd'
 
 
 const mdKaTeX = `This is to display the 
@@ -14,10 +14,30 @@ c = \\pm\\sqrt{a^2 + b^2}
 \`\`\`
 `;
 
-export default function CreateProblem({coursename}) {
+export default function CreateProblem({courseName}) {
+    const [summitCourseName, setSummitCourseName] = useState(courseName)
+    const [title, setTitle] = useState("")
     return (
     <>
-        <Typography.Title>Create a course problem.</Typography.Title>
+        {
+        courseName?
+        <Typography.Title>新增一個 $`{courseName}` 問題.</Typography.Title>
+        :
+        <div>
+        <Input
+            type="courseName"
+            onChange={(e)=> setSummitCourseName(e.target.value)}
+            placeholder="課程名稱"
+        />
+        </div>
+        }
+        <Typography.Title>問題標題</Typography.Title>
+        <Input
+            type="courseName"
+            onChange={(e)=> setTitle(e.target.value)}
+            placeholder="輸入問題標題"
+        />
+        <Typography.Title>問題</Typography.Title>
         <MDEditor
             value={mdKaTeX}
             previewOptions={{
@@ -53,6 +73,7 @@ export default function CreateProblem({coursename}) {
             Submit
         </Button>
         </div>
+
     </>
     );
 }
