@@ -19,10 +19,10 @@ const LoginPage =({isLogin, memberName,setMemberName, setIsLogin, setMemberMail}
 		?
 		<HaveLogin memberName={memberName}/>
 		:
-		<div className="login">
+		<div className="login" style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
 			{loginOrRegister === "login" 
 				? 
-				<Login setMemberName={setMemberName} setIsLogin={setIsLogin} setLoginOrRegister={setLoginOrRegister} setMemberMail={setMemberMail}></Login>
+				<Login setMemberName={setMemberName} setIsLogin={setIsLogin} setLoginOrRegister={setLoginOrRegister} setMemberMail={setMemberMail} ></Login>
 				:
 				<Register setLoginOrRegister={setLoginOrRegister}></Register>
 			}

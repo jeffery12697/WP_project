@@ -40,7 +40,7 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail })
 
 	return (
 		<div className="site-card-border-less-wrapper">
-			<Card title="登入" bordered={true} style={{ width: 300 }}>
+			<Card title="登入" bordered={true} style={{ width: 300 ,flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 				<Form
 					name="normal_login"
 					className="login-form"
