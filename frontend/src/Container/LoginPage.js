@@ -1,6 +1,3 @@
-import { Form, Input, Button, Checkbox } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Space, Card} from "antd";
 import { useState,useEffect } from 'react';
 
 
@@ -19,7 +16,7 @@ const LoginPage =({isLogin, memberName,setMemberName, setIsLogin, setMemberMail}
 		?
 		<HaveLogin memberName={memberName}/>
 		:
-		<div className="login" style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
+		<div className="login" style={{display: 'flex',  justifyContent:'center', alignItems:'top', height: '100vh'}}>
 			{loginOrRegister === "login" 
 				? 
 				<Login setMemberName={setMemberName} setIsLogin={setIsLogin} setLoginOrRegister={setLoginOrRegister} setMemberMail={setMemberMail} ></Login>

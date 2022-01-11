@@ -9,6 +9,8 @@ import LoginPage from "./Container/LoginPage";
 import Navbar from "./Container/Navbar"
 import SearchCourse from "./Container/SearchCourse";
 
+import CreateProblem from "./Container/CreateProblem";
+
 import Cookie from "js.cookie";
 
 function App() {
@@ -21,16 +23,15 @@ function App() {
 
   return (
     <div className="App">
-      <Button />
       <Router>
-        <div className="navbar">
-          <Navbar memberName={memberName} isLogin={isLogin}
-              setMemberName={setMemberName} setIsLogin={setIsLogin}
-          />
-        </div>
         <Routes>
           <Route exact path="/" element={
             <div className="tc bg-gray ma0 pa4 min-vh-100">
+            <div className="navbar">
+            <Navbar memberName={memberName} isLogin={isLogin}
+                setMemberName={setMemberName} setIsLogin={setIsLogin}
+            />
+            </div>
             <SearchCourse />
             </div>
           }
@@ -40,9 +41,11 @@ function App() {
             <LoginPage isLogin={isLogin} memberName={memberName} setMemberName={setMemberName} setIsLogin={setIsLogin}setMemberMail={setMemberMail} />
             </div>
           }/>
-          {/* <Route path="/login">
-            <LoginPage isLogin={isLogin} memberName={memberName} setMemberName={setMemberName} setIsLogin={setIsLogin}setMemberMail={setMemberMail} />
-          </Route> */}
+          <Route path="/createProblem" element={
+            <div className="tc bg-gray ma0 pa4 min-vh-100">
+            <CreateProblem/>
+            </div>
+          }/>
         </Routes>
       </Router>
     </div>

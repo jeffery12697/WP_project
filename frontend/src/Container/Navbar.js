@@ -16,10 +16,7 @@ const Navbar = ({memberName, isLogin, setMemberName, setIsLogin}) => {
 
     return (
     <>
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]} style={{ width: "20%", marginRight: "5px" }}>
-            <Menu.Item key="1" className="menu-item">
-                <Link to="/" style={{ textDecoration: "none" }}> 課程搜尋  </Link>
-            </Menu.Item>
+        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]} style={{ float: "right", width: "20%", marginRight: "5px" }}>
             <Menu.Item key="2">
             <Link to="/login" style={{ textDecoration: "none" }}>
                 {isLogin
