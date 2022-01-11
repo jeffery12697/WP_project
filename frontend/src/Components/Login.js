@@ -8,7 +8,7 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail })
 	const [email, setEmail] = useState("initialState");
 	const [password, setPassword] = useState("initialState");
 
-	const Submit = async (values) => {
+	const Submit = (values) => {
 		//去後端根據電子郵件拿密碼
 		// const data = await loginCheck(values.username, values.password)
 		// switch (data) {
@@ -23,6 +23,9 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail })
 		// 		setMemberMail(mail)
 		// 		break;
 		// }
+
+		setIsLogin(true);
+		setMemberName(values.username);
 	};
 
 
