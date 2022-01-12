@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Form, Input, Button, Checkbox, Space, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { link, Redirect } from '@uiw/react-md-editor';
 // import { getMail, loginCheck } from '../api/User';
 
 
-const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail }) => {
+const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, islogin }) => {
 	const [email, setEmail] = useState("initialState");
 	const [password, setPassword] = useState("initialState");
 
@@ -26,6 +27,7 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail })
 
 		setIsLogin(true);
 		setMemberName(values.username);
+
 	};
 
 
@@ -43,6 +45,7 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail })
 
 	return (
 		<div className="site-card-border-less-wrapper">
+			{islogin}
 			<Card title="登入" bordered={true} style={{ width: 300 ,flex: 1, alignItems: 'center', justifyContent: 'center'}}>
 				<Form
 					name="normal_login"

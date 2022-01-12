@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./Container/LoginPage";
 import Navbar from "./Container/Navbar"
 import SearchCourse from "./Container/SearchCourse";
+import CoursePage from "./Container/CoursePage";
 
 import CreateProblem from "./Container/CreateProblem";
 
@@ -43,7 +44,13 @@ function App() {
           }/>
           <Route path="/createProblem" element={
             <div className="tc bg-gray ma0 pa4 min-vh-100">
-            <CreateProblem courseName={courseName} setCourseName={setCourseName}/>
+              <CreateProblem courseName={courseName} setCourseName={setCourseName}/>
+            </div>
+          }/>
+
+          <Route path="/problem" element={
+            <div className="tc bg-gray ma0 pa4 min-vh-100">
+              <CoursePage courseName={courseName} isLogin={isLogin} memberName={memberName}/>
             </div>
           }/>
 

@@ -3,6 +3,7 @@ import MDEditor from '@uiw/react-md-editor';
 import katex from 'katex';
 import 'katex/dist/katex.css'
 import { Typography, Button, Input} from 'antd'
+import { Link } from "react-router-dom";
 
 
 const mdKaTeX = `This is to display the 
@@ -69,9 +70,11 @@ export default function CreateProblem({courseName}) {
             }}
         />
         <div style={{padding:"10px"}}>
-        <Button type={"primary"}>
-            Submit
-        </Button>
+            <Link to="\">
+                <Button type={"primary"}>
+                    Submit
+                </Button>
+            </Link>
         </div>
 
     </>
