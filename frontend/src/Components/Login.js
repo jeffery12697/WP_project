@@ -10,20 +10,6 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, i
 	const [password, setPassword] = useState("initialState");
 
 	const Submit = (values) => {
-		//去後端根據電子郵件拿密碼
-		// const data = await loginCheck(values.username, values.password)
-		// switch (data) {
-		// 	case "Liar.":
-		// 		message.error("Liar...", 3)
-		// 		break;
-		// 	case "Good.":
-		// 		message.success("登入成功")
-		// 		setIsLogin(true);
-		// 		setMemberName(values.username);
-		// 		const mail = await getMail(values.username);
-		// 		setMemberMail(mail)
-		// 		break;
-		// }
 
 		setIsLogin(true);
 		setMemberName(values.username);

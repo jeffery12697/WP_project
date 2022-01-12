@@ -7,7 +7,7 @@ const HaveLogin = ({memberName}) =>{
 		<div>
 		<Result
 			icon={<SmileOutlined twoToneColor="red"/>}
-			title={`${memberName} 您好~`}
+			title={`${memberName} 您好`}
 			extra={<div>歡迎使用本網站</div>}
 		/>
 		<Link to="/">

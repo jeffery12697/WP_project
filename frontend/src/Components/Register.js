@@ -206,14 +206,6 @@ const Register = ( {setLoginOrRegister} ) => {
                     required: true,
                     message: '請輸入寄到您註冊信箱的驗證碼!',
                   },
-                  // ({ getFieldValue }) => ({
-                  //   validator(_, value) {
-                  //     if (!value) {
-                  //       return Promise.resolve();
-                  //     }
-                  //     return Promise.reject(new Error('驗證碼錯誤!'));
-                  //   },
-                  // })
                 ]}
               >
                 <Input onChange={onChangeCaptcha}/>
@@ -231,7 +223,7 @@ const Register = ( {setLoginOrRegister} ) => {
           rules={[
             {
               validator: (_, value) =>
-                value ? Promise.resolve() : Promise.reject(new Error('希望你能當個誠實的人QQ')),
+                value ? Promise.resolve() : Promise.reject(new Error('錯誤嘍')),
             },
           ]}
           {...tailFormItemLayout}
