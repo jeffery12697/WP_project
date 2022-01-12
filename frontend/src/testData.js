@@ -26,7 +26,8 @@ const testProblem = [
     user_likes: true,
     author: "hfiehf",
     title:"HiHI",
-    content: "Hi~~~~"
+    content: "Hi~~~~",
+    tags: ["midterm", "unsolved"]
   },
   {
     problem_id:2,
@@ -34,7 +35,8 @@ const testProblem = [
     user_likes: false,
     author: "Amy",
     title:"HiHI",
-    content: "Hi~~~~"
+    content: "Hi~~~~",
+    tags: ["midterm", "unsolved"]
   },
   {
     problem_id:3,
@@ -42,7 +44,8 @@ const testProblem = [
     user_likes: true,
     author: "Jeffery",
     title:"HiHI",
-    content: "# Hi I like eat food \n ## I don't like food"
+    content: "# Hi my name is Jeffery\n ## I don't like food \n > stay hungry stay foolish",
+    tags: ["midterm", "unsolved"]
   }
 ]
 

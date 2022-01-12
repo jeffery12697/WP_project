@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Space } from 'antd';
+import { Modal, Space, Tag } from 'antd';
 import { Card, Comment, Avatar, Form, Button, List, Input, Tooltip } from 'antd';
 import moment from 'moment';
 import ReactMarkdown from 'react-markdown'
@@ -47,6 +47,8 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                     }
 
                 />
+
+                {item.tags.map((tag) => <Tag>{tag}</Tag>)}
 
             </div>
 
