@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Space } from 'antd';
 import { Card, Comment, Avatar, Form, Button, List, Input, Tooltip } from 'antd';
 import moment from 'moment';
+import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import MarkdownPreview from '@uiw/react-markdown-preview';
+
+import 'katex/dist/katex.min.css' 
 
 const { TextArea } = Input;
 
@@ -12,7 +18,7 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
     const [replyList, setreplyList] = useState([])
 
 
-    const pressProblem = async (problem_id) => {
+    const pressProblem =  (problem_id) => {
         console.log('press problem', problem_id)
 
 
@@ -41,11 +47,7 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                     }
 
                 />
-                <div className='text' onClick={() => pressProblem(item.problem_id)} style={{ cursor: 'pointer' }}>
 
-                    {item.content}
-
-                </div>
             </div>
 
 
@@ -56,9 +58,12 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                         author={<a style={{ fontSize: "20px" }}>{item.author}</a>}
                         avatar={<Avatar src={`https://joeschmoe.io/api/v1/${item.author}`} alt={item.author} />}
                         content={
-                            <p>
-                                {item.content}
-                            </p>
+                            // <ReactMarkdown
+                            // children={item.content}
+                            // remarkPlugins={[remarkMath]}
+                            // rehypePlugins={[rehypeKatex]}
+                            // />
+                            <MarkdownPreview source={item.content}/>
                         }
                         datetime={(
                             <Tooltip title={moment(item.datetime).format('YYYY-MM-DD HH:mm:ss')}>

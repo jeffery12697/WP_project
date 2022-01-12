@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import IconText from './IconText';
 import ProblemModal from './ProblemModal';
 
-// import { get_post_reply } from "../api/DepPost";
 
 
 const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
+
 
 
     return (
