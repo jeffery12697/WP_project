@@ -215,15 +215,15 @@ router.get('/search', async (req, res) => {
     res.json(courses)
 })
 
-router.get('/search/course', async (req, res) => {
-    const course_name = req.query.course_name
+router.post('/search/course', async (req, res) => {
+    const course_name = req.body.course_name
     const course = await Course.findOne({course_name: course_name})
     if (!course) {
         res.status(400).send({ msg: "Course doesn't exist" })
     }
     const course_id = course.course_id
-    const teacher = req.query.teacher
-    const tags = req.query.tags
+    const teacher = req.body.teacher
+    const tags = req.body.tags
     const username = req.cookies.username
     let problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}}).sort({time:-1})
     if (tags.length===0) {
