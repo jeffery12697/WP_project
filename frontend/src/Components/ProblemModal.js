@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Space, Tag } from 'antd';
-import { Card, Comment, Avatar, Form, Button, List, Input, Tooltip } from 'antd';
+import { Modal, Space, Tag, Avatar, Tooltip } from 'antd';
+import { Card, Comment, Form, Button, List, Input } from 'antd';
 import moment from 'moment';
-import ReactMarkdown from 'react-markdown'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
 import MarkdownPreview from '@uiw/react-markdown-preview';
+import {
+    LikeOutlined, DislikeFilled,
+    DislikeOutlined, LikeFilled
+} from '@ant-design/icons';
 
 import 'katex/dist/katex.min.css' 
 
@@ -83,8 +84,8 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                             <li>
                                 <Comment
                                     // actions={item.actions}
-                                    author={reply.username}
-                                    avatar={`https://joeschmoe.io/api/v1/${reply.username}`}
+                                    author={reply.publisher}
+                                    avatar={`https://joeschmoe.io/api/v1/${reply.publisher}`}
                                     content={reply.content}
                                     datetime={
                                         (
@@ -93,7 +94,19 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                                             </Tooltip>
                                         )
                                     }
+                                    actions={[
+                                        <Tooltip title="Like">
+                                        <span onClick={() => {
+                                            
+                                        }}>
+                                            {React.createElement(reply.able_to_like ? 
+                                            LikeFilled : LikeOutlined)}
+                                            {reply.likes_num}
+                                        </span>
+                                        </Tooltip>,
+                                    ]}
                                 />
+
                             </li>
                         )}
                     />

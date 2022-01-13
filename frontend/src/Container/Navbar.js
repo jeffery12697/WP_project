@@ -1,7 +1,8 @@
-import { Button, Menu } from "antd"
+import { Button, Menu, PageHeader } from "antd"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Cookies from "js.cookie"
+import logo from "../logo.png"
 
 
 const Navbar = ({memberName, isLogin, setMemberName, setIsLogin}) => {
@@ -15,8 +16,16 @@ const Navbar = ({memberName, isLogin, setMemberName, setIsLogin}) => {
     }
 
     return (
-    <>
-        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]} style={{ float: "right", width: "20%", marginRight: "5px" }}>
+    <div className="row" style={{display:"flex"}}>
+        <img src={logo} style={{ marginLeft: "10px", width: "120px", height: "80px"}} alt="logo" />
+
+        <PageHeader> 台大考古題交流網站 </PageHeader>
+        
+        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]} style={{ float: "right", width: "20%", marginRight: "5px"}}>
+
+            <Menu.Item key="1" className="menu-item">
+            <Link to="/" style={{ textDecoration: "none" }}> 搜尋課程  </Link>
+            </Menu.Item>
             <Menu.Item key="2">
             <Link to="/login" style={{ textDecoration: "none" }}>
                 {isLogin
@@ -29,8 +38,10 @@ const Navbar = ({memberName, isLogin, setMemberName, setIsLogin}) => {
                 "登入 / 註冊"}
             </Link>
             </Menu.Item>
+
         </Menu>
-    </>
+
+    </div>
     )
 };
 

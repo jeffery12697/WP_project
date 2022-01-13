@@ -18,6 +18,7 @@ c = \\pm\\sqrt{a^2 + b^2}
 export default function CreateProblem({courseName}) {
     const [summitCourseName, setSummitCourseName] = useState(courseName)
     const [title, setTitle] = useState("")
+    
     return (
     <>
         {

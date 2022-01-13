@@ -115,7 +115,7 @@ const Register = ( {setLoginOrRegister} ) => {
                 if (!value || getFieldValue('email').indexOf("@ntu.edu.tw") !== -1) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('請使用台大信箱註冊!'));
+                return Promise.reject(new Error('請使用合法信箱註冊!'));
               },
             })
           ]}
