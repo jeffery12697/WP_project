@@ -44,7 +44,7 @@ function App() {
           }/>
           <Route path="/createProblem" element={
             <div className="tc bg-gray ma0 pa4 min-vh-100">
-              <CreateProblem courseName={courseName} setCourseName={setCourseName}/>
+              <CreateProblem courseName={courseName} setCourseName={setCourseName} username={memberName}/>
             </div>
           }/>
 

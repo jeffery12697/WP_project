@@ -2,6 +2,7 @@ import { Space, Card} from "antd";
 import { Form,  Input,  Row, Col,  Checkbox,  Button,  message,} from 'antd';
 import { useState } from "react";
 // import {setVerifyCode, createUser} from "../api/User"
+import instance from "../api";
 
 
 const Register = ( {setLoginOrRegister} ) => {
@@ -11,10 +12,62 @@ const Register = ( {setLoginOrRegister} ) => {
   const [captcha, setCaptcha] = useState('');
 
 
-  const submit = async(values) => {
-    
+  const submit = async (values) => {
+    let msg = await handleRegister();
+		console.log(msg)
+		if (msg === "User created") {
+			displayStatus({
+				type: "success",
+				msg: msg,
+			});
+			setLoginOrRegister("login");
+		}
+		else {
+			// alert(msg)
+			displayStatus({
+				type: "error",
+				msg: msg,
+			});
+		}
   };
-		
+	
+  const handleRegister = async () => {
+    if (email.length > 0 && captcha.length > 0 && nickname.length > 0 && password.length > 0) {
+      try {
+        const {
+          data: { msg },
+        } = await instance.post('/user/register', {
+          mail: email,
+          vcode: captcha,
+          username: nickname,
+          password
+        });
+        console.log(msg);
+        return msg
+      }
+      catch (error) {
+        // console.error(error)
+        console.log(error.response.data.msg)
+        return error.response.data.msg
+      }
+    }
+  }
+
+  const displayStatus = (payload) => {
+		if (payload.msg) {
+			const { type, msg } = payload
+			const content = { content: msg, duration: 0.5 }
+			switch (type) {
+				case 'success':
+					message.success(content)
+					break
+				case 'error':
+				default:
+					message.error(content)
+					break
+		  }
+		}
+	}
 
 	const onClickLogin =(e)=> {
 		e.preventDefault();
@@ -38,7 +91,30 @@ const Register = ( {setLoginOrRegister} ) => {
     //     message.error("此電子郵件已被註冊")
     //   else if (data === "Good.")
     //     message.success("已寄出驗證碼")
-    
+      let msg = await handleSetVerifyCode()
+      displayStatus({
+				type: "success",
+				msg: msg,
+			});
+    }
+  }
+
+  const handleSetVerifyCode = async () => {
+    if (email.length > 0)  {
+      try {
+        const {
+          data: { msg },
+        } = await instance.post('/user/set_verify_code', {
+          mail: email
+        });
+        console.log(msg);
+        return msg
+      }
+      catch (error) {
+        // console.error(error)
+        console.log(error.response.data.msg)
+        return error.response.data.msg
+      } 
     }
   }
 
@@ -201,12 +277,12 @@ const Register = ( {setLoginOrRegister} ) => {
         <Form.Item
           name="agreement"
           valuePropName="checked"
-          rules={[
-            {
-              validator: (_, value) =>
-                value ? Promise.resolve() : Promise.reject(new Error('錯誤嘍')),
-            },
-          ]}
+          // rules={[
+          //   {
+          //     validator: (_, value) =>
+          //       value ? Promise.resolve() : Promise.reject(new Error('錯誤嘍')),
+          //   },
+          // ]}
           {...tailFormItemLayout}
         >
         </Form.Item>

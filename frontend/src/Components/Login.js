@@ -3,22 +3,82 @@ import { Form, Input, Button, Checkbox, Space, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { link, Redirect } from '@uiw/react-md-editor';
 // import { getMail, loginCheck } from '../api/User';
+import instance from '../api';
 
 
 const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, islogin }) => {
-	const [email, setEmail] = useState("initialState");
+	const [username, setUsername] = useState("initialState");
 	const [password, setPassword] = useState("initialState");
 
-	const Submit = (values) => {
-
-		setIsLogin(true);
-		setMemberName(values.username);
-
+	const Submit = async (values) => {
+		let msg = await handleLogin();
+		console.log(msg)
+		if (msg === "Success!") {
+			displayStatus({
+				type: "success",
+				msg: msg,
+			});
+			setIsLogin(true);
+			setMemberName(values.username);
+		}
+		else {
+			// alert(msg)
+			displayStatus({
+				type: "error",
+				msg: msg,
+			});
+		}
 	};
 
+	const displayStatus = (payload) => {
+		if (payload.msg) {
+			const { type, msg } = payload
+			const content = { content: msg, duration: 0.5 }
+			switch (type) {
+				case 'success':
+					message.success(content)
+					break
+				case 'error':
+				default:
+					message.error(content)
+					break
+		  	}
+		}
+	}
 
-	const onChange_Email = (e) => {
-		setEmail(e.target.value)
+	const handleLogin = async () => {
+        if (username.length === 0) {
+            alert("You have to fill in your username!")
+            return
+        }
+        if (password.length === 0) {
+            alert("You have to fill in your password!")
+            return
+        }
+        if (username.length > 0 && password.length > 0) {
+            try {
+                const {
+                    data: { msg },
+                } = await instance.post('/user/login', {
+                    username,
+                    password
+                });
+                console.log(msg);
+				return msg;
+            }
+            catch (error) {
+                // console.error(error)
+                console.log(error.response.data.msg)
+				return error.response.data.msg
+            }
+        }
+        else {
+            alert("You have to fill in username and password!")
+        }
+    }
+
+	const onChange_Username = (e) => {
+		setUsername(e.target.value)
 	}
 	const onChange_Password = (e) => {
 		setPassword(e.target.value)
@@ -54,7 +114,7 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, i
 						<Input
 							prefix={<UserOutlined className="site-form-item-icon" />}
 							placeholder="使用者姓名"
-							onChange={onChange_Email}
+							onChange={onChange_Username}
 						/>
 					</Form.Item>
 					<Form.Item

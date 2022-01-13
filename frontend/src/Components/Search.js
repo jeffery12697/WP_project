@@ -5,18 +5,19 @@ import CourseSearchList from './CourseSearchList';
 function Search({ details, setCourseName }) {
 
   const [searchField, setSearchField] = useState("");
-
+  console.log(details)
   const filteredCourses = details.filter(
     person => {
       return (
         person
-        .name
-        .toLowerCase()
-        .includes(searchField.toLowerCase()) ||
-        person
-        .teacher
-        .toLowerCase()
-        .includes(searchField.toLowerCase())
+        .course_name
+        // .toLowerCase()
+        // .includes(searchField.toLowerCase())
+        // ||
+        // person
+        // .teacher
+        // .toLowerCase()
+        // .includes(searchField.toLowerCase())
       );
     }
   );
