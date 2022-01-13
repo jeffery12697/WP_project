@@ -142,7 +142,7 @@ router.post('/create/course', async (req, res) => {
     try {
         const newCourse = new Course({ course_name, course_id })
         await newCourse.save()
-        res.json({msg: 'Course created'})
+        res.json({msg: 'Course created', course_id: course_id})
     } catch (e) { throw new Error("Course creation error")}
 })
 
@@ -153,7 +153,18 @@ router.post('/create/problem', async (req, res) => {
         res.json({ msg: 'Wrong cookie token' })
         return
     }
-    const course_id = req.body.course_id
+    const course_name = req.body.course_name
+    const course = await Course.findOne({course_name: course_name})
+    let course_id = ""
+    if (course) {
+        course_id = course.course_id
+    } else {
+        course_id = uuidv4()
+        try {
+            const newCourse = new Course({ course_name, course_id })
+            await newCourse.save()
+        } catch (e) { throw new Error("Course creation error")}
+    }
     const problem_id = uuidv4()
     const title = req.body.title
     const description = req.body.description
@@ -205,7 +216,12 @@ router.get('/search', async (req, res) => {
 })
 
 router.get('/search/course', async (req, res) => {
-    const course_id = req.query.course_id
+    const course_name = req.query.course_name
+    const course = await Course.findOne({course_name: course_name})
+    if (!course) {
+        res.status(400).send({ msg: "Course doesn't exist" })
+    }
+    const course_id = course.course_id
     const teacher = req.query.teacher
     const tags = req.query.tags
     const username = req.cookies.username
