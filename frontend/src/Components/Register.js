@@ -12,26 +12,7 @@ const Register = ( {setLoginOrRegister} ) => {
 
 
   const submit = async(values) => {
-    // const result = await createUser(email,captcha,nickname,password)
-
-    // switch(result){
-    //   case "Didn't click verify button!":
-    //     message.error("請點擊獲取驗證碼按鈕以獲取驗證碼", 3)
-    //     break;
-    //   case "Wrong verify code.":
-    //     message.error("驗證碼錯誤", 3)
-    //     break;
-    //   case "username exist!":
-    //     message.error("使用者名字重複", 3)
-    //     break;
-    //   case "mail exist!":
-    //     message.error("信箱已存在", 3)
-    //     break;
-    //   case "User created.":
-    //     message.success("成功註冊，請重新登入", 3)
-    //     setLoginOrRegister("login");
-    //     break;
-    // }
+    
   };
 		
 
