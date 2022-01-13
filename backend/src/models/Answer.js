@@ -7,6 +7,7 @@ const AnswerSchema = new Schema({
     content: String,
     publisher: String,
     likes: [String],
+    time: Date
 });
 const Answer = mongoose.model('Answer', AnswerSchema);
 

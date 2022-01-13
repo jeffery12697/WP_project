@@ -162,12 +162,13 @@ router.post('/create/problem', async (req, res) => {
     const publisher = username
     const likes = []
     const content = req.body.answer
+    const time = Date()
     try {
-        const newProblem = new Problem({ course_id, problem_id, title, description, tags, teacher, publisher, likes })
+        const newProblem = new Problem({ course_id, problem_id, title, description, tags, teacher, publisher, likes, time })
         await newProblem.save()
         if (content) {
             const answer_id = uuidv4()
-            const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes})
+            const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes, time })
             await newAnswer.save()
         }
         res.json({msg: 'Problem created'})
@@ -186,8 +187,9 @@ router.post('/create/answer', async (req, res) => {
     const content = req.body.content
     const publisher = username
     const likes = []
+    const time = Date()
     try {
-        const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes})
+        const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes, time })
         await newAnswer.save()
         res.json({msg: 'Answer created'})
     } catch (e) { throw new Error("Answer creation error")}
@@ -207,9 +209,9 @@ router.get('/search/course', async (req, res) => {
     const teacher = req.query.teacher
     const tags = req.query.tags
     const username = req.cookies.username
-    let problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}})
+    let problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}}).sort({time:-1})
     if (tags.length===0) {
-        problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}})
+        problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}}).sort({time:-1})
     }
     for (let i=0; i<problems.length; i++) {
         problems[i] = {problem_id: problems[i].problem_id,
@@ -218,7 +220,8 @@ router.get('/search/course', async (req, res) => {
             likes_num: problems[i].likes.length,
             tags: problems[i].tags,
             publisher: problems[i].publisher,
-            able_to_like: !(problems[i].likes.includes(username))||!(username)
+            able_to_like: !(problems[i].likes.includes(username))||!(username),
+            time: problems[i].time
         }
     }
     res.json(problems)
@@ -234,9 +237,11 @@ router.get('/problem', async (req, res) => {
             content: answers[i].content,
             publisher: answers[i].publisher,
             likes_num: answers[i].likes.length,
-            able_to_like: !(answers[i].likes.includes(username)||!(username))
+            able_to_like: !(answers[i].likes.includes(username)||!(username)),
+            time: answers[i].time
         }
     }
+    answers.sort(function (a,b){return b.likes_num-a.likes_num})
     res.json({
         title: problem.title,
         description: problem.description,
@@ -245,7 +250,8 @@ router.get('/problem', async (req, res) => {
         tags: problem.tags,
         likes_num: problem.likes.length,
         able_to_like: !(problem.likes.includes(username)||!(username)),
-        answers: answers
+        answers: answers,
+        time: problem.time
     })
 })
 

@@ -10,6 +10,7 @@ const ProblemSchema = new Schema({
     teacher: String,
     publisher: String,
     likes: [String],
+    time: Date,
 });
 const Problem = mongoose.model('Problem', ProblemSchema);
 
