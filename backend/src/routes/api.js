@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Course from '../models/Course'
 import Problem from '../models/Problem'
 import Answer from '../models/Answer'
+import Cookie from '../models/Cookie'
 
 dotenv.config();
 
@@ -100,6 +101,13 @@ router.post('/user/login', async (req, res) => {
     const user = await User.findOne({ username: username })
     if (user) {
         if (await bcrypt.compare(password, user.password)) {
+            try {
+                const token = makevcode(6)
+                const newCookie = new Cookie({ username, token })
+                await newCookie.save()
+                res.cookie('username', username)
+                res.cookie('token', token)
+            } catch (e) { throw new Error("Cookie creation error")}
             res.json({ msg: 'Success!' })
             return
         }
@@ -109,7 +117,26 @@ router.post('/user/login', async (req, res) => {
     res.status(400).send({ msg: "Username doesn't exist" })
 })
 
+router.post('/user/logout', async (req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (await Cookie.findOne({ username: username, token: token })) {
+        await Cookie.deleteOne({ username: username, token: token })
+        res.clearCookie('token')
+        res.clearCookie('username')
+        res.json({ msg: 'Logout success' })
+    } else {
+        res.json({ msg: 'Wrong cookie token' })
+    }
+})
+
 router.post('/create/course', async (req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (!await Cookie.findOne({ username: username, token: token })) {
+        res.json({ msg: 'Wrong cookie token' })
+        return
+    }
     const course_name = req.body.course_name
     const course_id = uuidv4()
     try {
@@ -120,13 +147,19 @@ router.post('/create/course', async (req, res) => {
 })
 
 router.post('/create/problem', async (req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (!await Cookie.findOne({ username: username, token: token })) {
+        res.json({ msg: 'Wrong cookie token' })
+        return
+    }
     const course_id = req.body.course_id
     const problem_id = uuidv4()
     const title = req.body.title
     const description = req.body.description
     const tags = req.body.tags
     const teacher = req.body.teacher
-    const publisher = req.body.publisher
+    const publisher = username
     const likes = []
     const content = req.body.answer
     try {
@@ -142,10 +175,16 @@ router.post('/create/problem', async (req, res) => {
 })
 
 router.post('/create/answer', async (req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (!await Cookie.findOne({ username: username, token: token })) {
+        res.json({ msg: 'Wrong cookie token' })
+        return
+    }
     const problem_id = req.body.problem_id
     const answer_id = uuidv4()
     const content = req.body.content
-    const publisher = req.body.publisher
+    const publisher = username
     const likes = []
     try {
         const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes})
@@ -155,7 +194,7 @@ router.post('/create/answer', async (req, res) => {
 })
 
 router.get('/search', async (req, res) => {
-    const search_name = req.body.course_name
+    const search_name = req.query.course_name
     const courses = await Course.find({course_name: {$regex: search_name}})
     for (let i=0; i<courses.length; i++) {
         courses[i] = {course_name: courses[i].course_name, course_id: courses[i].course_id}
@@ -164,10 +203,10 @@ router.get('/search', async (req, res) => {
 })
 
 router.get('/search/course', async (req, res) => {
-    const course_id = req.body.course_id
-    const teacher = req.body.teacher
-    const tags = req.body.tags
-    const username = req.body.username
+    const course_id = req.query.course_id
+    const teacher = req.query.teacher
+    const tags = req.query.tags
+    const username = req.cookies.username
     let problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}})
     if (tags.length===0) {
         problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}})
@@ -179,15 +218,15 @@ router.get('/search/course', async (req, res) => {
             likes_num: problems[i].likes.length,
             tags: problems[i].tags,
             publisher: problems[i].publisher,
-            able_to_like: !(problems[i].likes.includes(username))
+            able_to_like: !(problems[i].likes.includes(username))||!(username)
         }
     }
     res.json(problems)
 })
 
 router.get('/problem', async (req, res) => {
-    const problem_id = req.body.problem_id
-    const username = req.body.username
+    const problem_id = req.query.problem_id
+    const username = req.cookies.username
     const problem = await Problem.findOne({problem_id: problem_id})
     const answers = await Answer.find({problem_id: problem_id})
     for (let i=0; i<answers.length; i++) {
@@ -195,7 +234,7 @@ router.get('/problem', async (req, res) => {
             content: answers[i].content,
             publisher: answers[i].publisher,
             likes_num: answers[i].likes.length,
-            able_to_like: !(answers[i].likes.includes(username))
+            able_to_like: !(answers[i].likes.includes(username)||!(username))
         }
     }
     res.json({
@@ -205,14 +244,19 @@ router.get('/problem', async (req, res) => {
         publisher: problem.publisher,
         tags: problem.tags,
         likes_num: problem.likes.length,
-        able_to_like: !(problem.likes.includes(username)),
+        able_to_like: !(problem.likes.includes(username)||!(username)),
         answers: answers
     })
 })
 
 router.post('/like/problem', async(req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (!await Cookie.findOne({ username: username, token: token })) {
+        res.json({ msg: 'Wrong cookie token' })
+        return
+    }
     const problem_id = req.body.problem_id
-    const username = req.body.username
     try {
         const problem = await Problem.findOne({ problem_id: problem_id })
         if (problem.likes.includes(username)) {
@@ -230,8 +274,13 @@ router.post('/like/problem', async(req, res) => {
 })
 
 router.post('/like/answer', async(req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (!await Cookie.findOne({ username: username, token: token })) {
+        res.json({ msg: 'Wrong cookie token' })
+        return
+    }
     const answer_id = req.body.answer_id
-    const username = req.body.username
     try {
         const answer = await Answer.findOne({ answer_id: answer_id })
         if (answer.likes.includes(username)) {
