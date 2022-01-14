@@ -1,4 +1,4 @@
-import { Button, Menu, PageHeader } from "antd"
+import { Button, Menu, Typography} from "antd"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Cookies from "js.cookie"
@@ -19,7 +19,7 @@ const Navbar = ({memberName, isLogin, setMemberName, setIsLogin}) => {
     <div className="row" style={{display:"flex"}}>
         <img src={logo} style={{ marginLeft: "10px", width: "120px", height: "80px"}} alt="logo" />
 
-        <PageHeader> 台大考古題交流網站 </PageHeader>
+        <Typography> 台大考古題交流網站 </Typography>
         
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]} style={{ float: "right", width: "20%", marginRight: "5px"}}>
 
