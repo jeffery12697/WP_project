@@ -7,8 +7,11 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import instance from '../api';
+import Replyicon from './Replyicon';
+
 
 import 'katex/dist/katex.min.css' 
+import IconText from './Replyicon';
 
 const { TextArea } = Input;
 
@@ -81,10 +84,8 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
 	}
 
     const pressProblem =  (problem_id) => {
-        console.log('press problem', problem_id)
-        console.log(description)
+        console.log("Hiiii")
         console.log(replyList)
-        console.log(memberName)
         setProblemModalFlag(prev => !prev)
     }
 
@@ -149,7 +150,12 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                                     // actions={item.actions}
                                     author={reply.publisher}
                                     avatar={`https://joeschmoe.io/api/v1/${reply.publisher}`}
-                                    content={reply.content}
+                                    content={
+                                        <>
+                                            <MarkdownPreview source={reply.content}/>
+                                            <Replyicon user_likes={reply.able_to_like} iconNum={reply.likes_num} memberName={memberName} answer_id={reply.answer_id}/>
+                                        </>
+                                    }
                                     datetime={
                                         (
                                             <Tooltip title={moment(reply.time).format('YYYY-MM-DD HH:mm:ss')}>

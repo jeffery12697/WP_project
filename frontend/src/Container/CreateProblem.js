@@ -2,7 +2,7 @@ import { useState,useEffect } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import katex from 'katex';
 import 'katex/dist/katex.css'
-import { Typography, Button, Input, message} from 'antd'
+import { Typography, Button, Input, message, Form, Space, Card} from 'antd'
 import { Link } from "react-router-dom";
 import instance from '../api';
 
@@ -80,65 +80,93 @@ export default function CreateProblem({courseName, username}) {
 
     return (
     <>
-        {
-        courseName?
-        <Typography.Title>新增一個 $`{courseName}` 問題.</Typography.Title>
-        :
-        <div>
-        <Input
-            type="courseName"
-            onChange={(e)=> setSummitCourseName(e.target.value)}
-            placeholder="課程名稱"
-        />
-        </div>
-        }
-        <Typography.Title>問題標題</Typography.Title>
-        <Input
-            type="courseName"
-            onChange={(e)=> setTitle(e.target.value)}
-            placeholder="輸入問題標題"
-        />
-        <Typography.Title>問題</Typography.Title>
-        <MDEditor
-            value={content}
-            onChange={(val) => {
-                setContent(val);
-            }}
-            previewOptions={{
-            components: {
-                code: ({ inline, children = [], className, ...props }) => {
-                const txt = children[0] || '';
-                if (inline) {
-                    if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
-                    const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
-                        throwOnError: false,
-                    });
-                    return <code dangerouslySetInnerHTML={{ __html: html }} />;
-                    }
-                    return <code>{txt}</code>;
-                }
-                if (
-                    typeof txt === 'string' &&
-                    typeof className === 'string' &&
-                    /^language-katex/.test(className.toLocaleLowerCase())
-                ) {
-                    const html = katex.renderToString(txt, {
-                    throwOnError: false,
-                    });
-                    return <code dangerouslySetInnerHTML={{ __html: html }} />;
-                }
-                return <code className={String(className)}>{txt}</code>;
-                },
-            },
-            }}
-        />
-        <div style={{padding:"10px"}}>
-            <Link to="\">
-                <Button type={"primary"} onClick={submit}>
-                    Submit
-                </Button>
-            </Link>
-        </div>
+        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 800 }}>
+        <Form
+					name="normal_login"
+					className="login-form"
+					initialValues={{
+						remember: true,
+					}}
+					onFinish={submit}
+				>
+					<Form.Item
+						name="courseName"
+                        label="課程名稱"
+						rules={[
+							{
+								required: true,
+								message: '請輸入課程名稱!',
+							},
+						]}
+					>
+						<Input.TextArea
+							onChange={(e)=>{setSummitCourseName(e.target.value)}}
+						/>
+					</Form.Item>
+					<Form.Item
+						name="title"
+                        label="問題標題"
+						rules={[
+							{
+								required: true,
+							},
+						]}
+					>
+
+						<Input.TextArea
+							onChange={(e)=> setTitle(e.target.value)}
+						/>
+
+					</Form.Item>
+					<Form.Item
+                        label="問題描述"
+                    >
+                    <MDEditor
+                        value={content}
+                        onChange={(val) => {
+                            setContent(val);
+                        }}
+                        previewOptions={{
+                        components: {
+                            code: ({ inline, children = [], className, ...props }) => {
+                            const txt = children[0] || '';
+                            if (inline) {
+                                if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
+                                const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
+                                    throwOnError: false,
+                                });
+                                return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                                }
+                                return <code>{txt}</code>;
+                            }
+                            if (
+                                typeof txt === 'string' &&
+                                typeof className === 'string' &&
+                                /^language-katex/.test(className.toLocaleLowerCase())
+                            ) {
+                                const html = katex.renderToString(txt, {
+                                throwOnError: false,
+                                });
+                                return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                            }
+                            return <code className={String(className)}>{txt}</code>;
+                            },
+                        },
+                        }}
+                    />
+                    </Form.Item>
+
+					<Form.Item>
+						<Space>
+                        <Link to="\">
+                            <Button type={"primary"} onClick={submit}>
+                                Submit
+                            </Button>
+                        </Link>
+						</Space>
+					</Form.Item>
+				</Form>
+        </Card>
 
     </>
     );
