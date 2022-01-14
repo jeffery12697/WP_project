@@ -34,10 +34,10 @@ const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
                             className="problemCard"
                             key={item.problem_id}
                             actions={[
-                                <IconText icon={LikeOutlined} iconNum={item.likes_num} key="list-vertical-like-o" user_likes={item.user_likes} memberName={memberName} />,
-                                <IconText icon={MessageOutlined} iconNum={item.problem_reply_num} key="list-vertical-message" user_likes={item.user_likes} memberName={memberName}/>,
-                                (memberName == item.author) ?
-                                    <IconText icon={DeleteOutlined} iconNum={""} key="list-vertical-message" memberName={memberName} />
+                                <IconText icon={LikeOutlined} iconNum={item.likes_num} key="list-vertical-like-o" user_likes={item.able_to_like} memberName={memberName} problem_id={item.problem_id}/>,
+                                <IconText icon={MessageOutlined} iconNum={item.answers_num} key="list-vertical-message" user_likes={item.able_to_like} memberName={memberName} problem_id={item.problem_id}/>,
+                                (memberName == item.publisher) ?
+                                    <IconText icon={DeleteOutlined} iconNum={""} key="list-vertical-message" memberName={memberName} problem_id={item.problem_id}/>
                                     : null
 
                             ]}

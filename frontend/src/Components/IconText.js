@@ -1,18 +1,57 @@
 import React, { useState } from 'react';
 import { List, Avatar, Space, Alert, Button, Modal, message } from 'antd';
 import { MessageOutlined, LikeOutlined, StarOutlined, DeleteOutlined } from '@ant-design/icons';
+import instance from '../api';
 
 
 
-const IconText = ({ icon, user_likes, iconNum, memberName }) => {
+const IconText = ({ icon, user_likes, iconNum, memberName, problem_id }) => {
 
-    if (icon != LikeOutlined) user_likes = false
+    if (icon != LikeOutlined) user_likes = true
 
-    const [pressColor, setpressColor] = useState(user_likes)
+    const [pressColor, setpressColor] = useState(!user_likes)
     // const [showModal, setshowModal] = useState(false)
     const [showText, setshowText] = useState(iconNum)
 
+    const displayStatus = (payload) => {
+		if (payload.msg) {
+			const { type, msg } = payload
+			const content = { content: msg, duration: 0.5 }
+			switch (type) {
+				case 'success':
+					message.success(content)
+					break
+				case 'error':
+				default:
+					message.error(content)
+					break
+		  	}
+		}
+	}
 
+    const handleLikeProblem = async () => {
+        try {
+            const {
+                data: { msg },
+            } = await instance.post('/like/problem', {
+                username: memberName,
+                problem_id
+            });
+            console.log(msg);
+            displayStatus({
+				type: "success",
+				msg: msg,
+			});
+        }
+        catch (error) {
+            // console.error(error)
+            console.log(error.response.data.msg)
+            displayStatus({
+				type: "error",
+				msg: error.response.data.msg,
+			});
+        }
+    }
 
     const pressButton = async () => {
 
@@ -31,6 +70,7 @@ const IconText = ({ icon, user_likes, iconNum, memberName }) => {
             // console.log(res)
             setpressColor(prev => !prev)
             setshowText(prev => prev + (pressColor ? -1 : 1))
+            await handleLikeProblem()
 
         }
         if (icon == DeleteOutlined) {
