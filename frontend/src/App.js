@@ -43,13 +43,13 @@ function App() {
             </div>
           }/>
           <Route path="/createProblem" element={
-            <div className="tc bg-white ma0 pa4 min-vh-100">
+            <div className="tc bg-white ma0 pa4 min-vh-100" style={{display: 'flex',  justifyContent:'center', alignItems:'top', height: '100vh'}}>
               <CreateProblem courseName={courseName} setCourseName={setCourseName} username={memberName}/>
             </div>
           }/>
 
           <Route path="/problem" element={
-            <div className="tc bg-white ma0 pa4 min-vh-100">
+            <div className="tc bg-white ma0 pa4 min-vh-100" >
               <CoursePage courseName={courseName} isLogin={isLogin} memberName={memberName}/>
             </div>
           }/>

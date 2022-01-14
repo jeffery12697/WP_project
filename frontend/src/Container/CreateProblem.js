@@ -80,7 +80,7 @@ export default function CreateProblem({courseName, username}) {
 
     return (
     <>
-        <Card title="Default size card" extra={<a href="#">More</a>} style={{ width: 800 }}>
+        <Card title="新增問題"style={{ width: 800 }}>
         <Form
 					name="normal_login"
 					className="login-form"
