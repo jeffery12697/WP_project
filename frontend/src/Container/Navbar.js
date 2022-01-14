@@ -1,4 +1,4 @@
-import { message } from "antd"
+import { message, Space, Button} from "antd"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Cookies from "js.cookie"
@@ -7,11 +7,11 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import logo from '../logo.png'
 import { width } from "@mui/system";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 
 const Navbare = ({memberName, isLogin, setMemberName, setIsLogin}) => {
@@ -78,7 +78,8 @@ const Navbare = ({memberName, isLogin, setMemberName, setIsLogin}) => {
             </Menu.Item>
         </Menu> */}
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <ThemeProvider theme={darkTheme}>
+            <AppBar position="static" enableColorOnDark>
                 <Toolbar>
                 {/* <IconButton
                     size="large"
@@ -90,14 +91,21 @@ const Navbare = ({memberName, isLogin, setMemberName, setIsLogin}) => {
                     <MenuIcon />
                 </IconButton> */}
                 <img src={logo} style={{width:"70px", height:"70px"}}/>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    K
+
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} style={{justifyContent:'center'}}>
+                    Kaoguti Website
                 </Typography>
                 {isLogin ?
 
                 <>
-                    <Link to="/createProblem" style={{ textDecoration: "none" ,color:"white"}}> 創建問題 </Link>
+                    <Link to="/createProblem" style={{ textDecoration: "none" ,color:"white", paddingRight: "6px"}}> 
+                        <Button >
+                            創建問題 
+                        </Button>
+                    </Link>
+                    <Space>
                     <Button onClick={onClick_Logout}> 登出 </Button>
+                    </Space>
                 </>
 
                 :
@@ -105,9 +113,19 @@ const Navbare = ({memberName, isLogin, setMemberName, setIsLogin}) => {
                 }
                 </Toolbar>
             </AppBar>
+            </ThemeProvider>
         </Box>
     </>
     )
 };
+
+const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        main: '#1976d2',
+      },
+    },
+  });
 
 export default Navbare;

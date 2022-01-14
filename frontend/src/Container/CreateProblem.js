@@ -2,21 +2,15 @@ import { useState,useEffect } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import katex from 'katex';
 import 'katex/dist/katex.css'
-import { Typography, Button, Input, message, Form, Space, Card} from 'antd'
+import { Typography, Button, Input, message, Form, Space, Card, Select, Tag} from 'antd'
 import { Link } from "react-router-dom";
 import instance from '../api';
+import AnimatedMulti from '../Components/Tags'
 
 
-const mdKaTeX = `This is to display the 
-\`\$\$\c = \\pm\\sqrt{a^2 + b^2}\$\$\`
-in one line
 
-\`\`\`KaTeX
-c = \\pm\\sqrt{a^2 + b^2}
-\`\`\`
-`;
 
-export default function CreateProblem({courseName, username}) {
+export default function CreateProblem({courseName, username, isLogin}) {
     const [summitCourseName, setSummitCourseName] = useState(courseName)
     const [title, setTitle] = useState("")
     const [teacher, setTeacher] = useState("")
@@ -90,7 +84,6 @@ export default function CreateProblem({courseName, username}) {
 					onFinish={submit}
 				>
 					<Form.Item
-						name="courseName"
                         label="課程名稱"
 						rules={[
 							{
@@ -104,7 +97,6 @@ export default function CreateProblem({courseName, username}) {
 						/>
 					</Form.Item>
 					<Form.Item
-						name="title"
                         label="問題標題"
 						rules={[
 							{
@@ -118,6 +110,23 @@ export default function CreateProblem({courseName, username}) {
 						/>
 
 					</Form.Item>
+                    <Form.Item
+                        label="問題標籤"
+                        rules={[
+							{
+								required: true,
+							},
+						]}
+                    >
+                    <Select
+                        mode="multiple"
+                        showArrow
+                        tagRender={tagRender}
+                        style={{ width: '100%' }}
+                        options={options}
+                        onChange={(value)=>{console.log(value); setTags([...value])}}
+                    />
+                    </Form.Item>
 					<Form.Item
                         label="問題描述"
                     >
@@ -125,6 +134,44 @@ export default function CreateProblem({courseName, username}) {
                         value={content}
                         onChange={(val) => {
                             setContent(val);
+                        }}
+                        previewOptions={{
+                        components: {
+                            code: ({ inline, children = [], className, ...props }) => {
+                            const txt = children[0] || '';
+                            if (inline) {
+                                if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
+                                const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
+                                    throwOnError: false,
+                                });
+                                return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                                }
+                                return <code>{txt}</code>;
+                            }
+                            if (
+                                typeof txt === 'string' &&
+                                typeof className === 'string' &&
+                                /^language-katex/.test(className.toLocaleLowerCase())
+                            ) {
+                                const html = katex.renderToString(txt, {
+                                throwOnError: false,
+                                });
+                                return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                            }
+                            return <code className={String(className)}>{txt}</code>;
+                            },
+                        },
+                        }}
+                    />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="問題答案"
+                    >
+                    <MDEditor
+                        value={content}
+                        onChange={(val) => {
+                            setAnswer(val);
                         }}
                         previewOptions={{
                         components: {
@@ -165,9 +212,30 @@ export default function CreateProblem({courseName, username}) {
                         </Link>
 						</Space>
 					</Form.Item>
+
 				</Form>
         </Card>
 
     </>
+    );
+}
+const options = [{ value: 'solved', label:"solved", color:"gold" }, { value: 'midterm', label:"midterm", color:"lime" }, { value: 'final', label:"final", color:"green" }, { value: 'test', label:"test", color:"cyan" }]
+
+function tagRender(props) {
+    const { label, value, closable, onClose, color } = props;
+    const onPreventMouseDown = event => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    return (
+        <Tag
+        color={value === "solved"? "gold" : value === "midterm"? "lime" : value === "final" ?"green": "cyan"}
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{ marginRight: 3 }}
+        >
+        {label}
+        </Tag>
     );
 }

@@ -45,6 +45,7 @@ function Search({ details, setCourseName }) {
           type = "search" 
           placeholder = "Search Course Name" 
           onChange = {handleChange}
+          style={{borderBlockColor:"blue"}}
         />
       </div>
       {searchList()}
