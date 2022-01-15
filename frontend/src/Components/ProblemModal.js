@@ -6,6 +6,9 @@ import MarkdownPreview from '@uiw/react-markdown-preview';
 import instance from '../api';
 import Replyicon from './Replyicon';
 import Markdown from './Markdown';
+import MDEditor from '@uiw/react-md-editor';
+import katex from 'katex';
+import 'katex/dist/katex.css'
 
 
 import 'katex/dist/katex.min.css' 
@@ -29,6 +32,7 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
     const [time, setTime] = useState("")
 
     const [newReply, setNewReply] = useState(0)
+    const [newLike, setNewLike] = useState(0)
 
     useEffect(async () => {
 		let info = await handleProblem();
@@ -41,7 +45,8 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
         setLikes_num(info.likes_num);
         setAble_to_like(info.able_to_like);
         setTime(info.time);
-	}, [newReply]);
+	}, [newReply, newLike]);
+
 
     const handleProblem = async () => {
         try {
@@ -122,7 +127,38 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                         author={<a style={{ fontSize: "20px" }}>{publisher}</a>}
                         avatar={<Avatar src={`https://joeschmoe.io/api/v1/${publisher}`} alt={publisher} />}
                         content={
-                            <MarkdownPreview source={description}/>
+                            <MDEditor
+                                value={description}
+                                previewOptions={{
+                                    components: {
+                                    code: ({ inline, children = [], className, ...props }) => {
+                                        const txt = children[0] || '';
+                                        if (inline) {
+                                        if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
+                                            const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
+                                            throwOnError: false,
+                                            });
+                                            return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                                        }
+                                        return <code>{txt}</code>;
+                                        }
+                                        if (
+                                        typeof txt === 'string' &&
+                                        typeof className === 'string' &&
+                                        /^language-katex/.test(className.toLocaleLowerCase())
+                                        ) {
+                                        const html = katex.renderToString(txt, {
+                                            throwOnError: false,
+                                        });
+                                        return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                                        }
+                                        return <code className={String(className)}>{txt}</code>;
+                                    },
+                                    },
+                                }}
+                                preview="preview"
+                                hideToolbar={true}
+                            />
                         }
                         datetime={(
                             <Tooltip title={moment(time).format('YYYY-MM-DD HH:mm:ss')}>
@@ -144,8 +180,39 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                                     avatar={`https://joeschmoe.io/api/v1/${reply.publisher}`}
                                     content={
                                         <>
-                                            <MarkdownPreview source={reply.content}/>
-                                            <Replyicon user_likes={reply.able_to_like} iconNum={reply.likes_num} memberName={memberName} answer_id={reply.answer_id}/>
+                                            <MDEditor
+                                                value={reply.content}
+                                                previewOptions={{
+                                                    components: {
+                                                    code: ({ inline, children = [], className, ...props }) => {
+                                                        const txt = children[0] || '';
+                                                        if (inline) {
+                                                        if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
+                                                            const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
+                                                            throwOnError: false,
+                                                            });
+                                                            return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                                                        }
+                                                        return <code>{txt}</code>;
+                                                        }
+                                                        if (
+                                                        typeof txt === 'string' &&
+                                                        typeof className === 'string' &&
+                                                        /^language-katex/.test(className.toLocaleLowerCase())
+                                                        ) {
+                                                        const html = katex.renderToString(txt, {
+                                                            throwOnError: false,
+                                                        });
+                                                        return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                                                        }
+                                                        return <code className={String(className)}>{txt}</code>;
+                                                    },
+                                                    },
+                                                }}
+                                                preview="preview"
+                                                hideToolbar={true}
+                                            />
+                                            <Replyicon user_likes={reply.able_to_like} iconNum={reply.likes_num} memberName={memberName} answer_id={reply.answer_id} newLike={newLike} setNewLike={setNewLike}/>
                                         </>
                                     }
                                     datetime={
@@ -181,6 +248,7 @@ const CommentBlock = ({ problem_id, memberName, setreplyList, newReply, setNewRe
         await handleCreateAnswer();
         setNewReply(newReply+1);
         console.log(memberName)
+        setreplyVal("")
     }
 
     const displayStatus = (payload) => {
@@ -233,7 +301,39 @@ const CommentBlock = ({ problem_id, memberName, setreplyList, newReply, setNewRe
     return (
         <>
             <Form.Item label="留言">
-                <TextArea placeholder="input text" rows={2} onChange={e => setreplyVal(e.target.value)} value={replyVal} />
+            <MDEditor
+                value={replyVal}
+                onChange={(val) => {
+                    setreplyVal(val);
+                }}
+                previewOptions={{
+                    components: {
+                    code: ({ inline, children = [], className, ...props }) => {
+                        const txt = children[0] || '';
+                        if (inline) {
+                        if (typeof txt === 'string' && /^\$\$(.*)\$\$/.test(txt)) {
+                            const html = katex.renderToString(txt.replace(/^\$\$(.*)\$\$/, '$1'), {
+                            throwOnError: false,
+                            });
+                            return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                        }
+                        return <code>{txt}</code>;
+                        }
+                        if (
+                        typeof txt === 'string' &&
+                        typeof className === 'string' &&
+                        /^language-katex/.test(className.toLocaleLowerCase())
+                        ) {
+                        const html = katex.renderToString(txt, {
+                            throwOnError: false,
+                        });
+                        return <code dangerouslySetInnerHTML={{ __html: html }} />;
+                        }
+                        return <code className={String(className)}>{txt}</code>;
+                    },
+                    },
+                }}
+            />
             </Form.Item>
             <div
                 style={{

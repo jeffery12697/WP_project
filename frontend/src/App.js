@@ -33,13 +33,13 @@ function App() {
         <Routes>
           <Route exact path="/" element={
             <div className="tc bg-white ma0 pa4 min-vh-100">
-            <SearchCourse  setCourseName={setCourseName}/>
+              <SearchCourse  setCourseName={setCourseName}/>
             </div>
           }
           />
           <Route path="/login"element={
             <div className="tc bg-white ma0 pa4 min-vh-100">
-            <LoginPage isLogin={isLogin} memberName={memberName} setMemberName={setMemberName} setIsLogin={setIsLogin}setMemberMail={setMemberMail} />
+              <LoginPage isLogin={isLogin} memberName={memberName} setMemberName={setMemberName} setIsLogin={setIsLogin}setMemberMail={setMemberMail} />
             </div>
           }/>
           <Route path="/createProblem" element={

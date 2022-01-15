@@ -124,15 +124,18 @@ const Navbare = ({memberName, isLogin, setMemberName, setIsLogin}) => {
                             Hi! {memberName}
                         </Typography>
                     </div>
-                    <IconButton
-                        size="large"
-                        edge="end"
-                        aria-label="logout"
-                        aria-haspopup="true"
+                    <Link to='/'>
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            aria-label="logout"
+                            aria-haspopup="true"
+                            onClick={onClick_Logout}
 
-                    >
-                        <LogoutIcon color="white" />
-                    </IconButton>
+                        >
+                            <LogoutIcon color="white" />
+                        </IconButton>
+                    </Link>
                 </div>
                 :
                 <div style={{display:"flex", justifyContent:'right', width:"40%"}}>

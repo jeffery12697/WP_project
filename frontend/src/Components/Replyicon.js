@@ -5,7 +5,7 @@ import instance from '../api';
 
 
 
-const Replyicon = ({user_likes, iconNum, memberName, answer_id}) => {
+const Replyicon = ({user_likes, iconNum, memberName, answer_id, newLike, setNewLike}) => {
 
 
     const [pressColor, setpressColor] = useState(memberName? !user_likes : user_likes)
@@ -41,6 +41,7 @@ const Replyicon = ({user_likes, iconNum, memberName, answer_id}) => {
 				type: "success",
 				msg: msg,
 			});
+            setNewLike(newLike+1);
         }
         catch (error) {
             // console.error(error)
