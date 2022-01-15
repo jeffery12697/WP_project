@@ -7,7 +7,18 @@ import { Link } from "react-router-dom";
 import instance from '../api';
 import AnimatedMulti from '../Components/Tags'
 
+const { Option } = Select;
 
+const children = ["midterm", "final", "solved", "quiz", "test", "homework"]
+
+const mdKaTeX = `This is to display the 
+\`\$\$\c = \\pm\\sqrt{a^2 + b^2}\$\$\`
+ in one line
+
+\`\`\`KaTeX
+c = \\pm\\sqrt{a^2 + b^2}
+\`\`\`
+`;
 
 
 export default function CreateProblem({courseName, username, isLogin}) {
@@ -96,8 +107,9 @@ export default function CreateProblem({courseName, username, isLogin}) {
 							onChange={(e)=>{setSummitCourseName(e.target.value)}}
 						/>
 					</Form.Item>
-					<Form.Item
-                        label="問題標題"
+
+                    <Form.Item
+                        label="題目標題"
 						rules={[
 							{
 								required: true,
@@ -110,8 +122,23 @@ export default function CreateProblem({courseName, username, isLogin}) {
 						/>
 
 					</Form.Item>
+
+					<Form.Item
+                        label="授課老師"
+						rules={[
+							{
+								required: true,
+							},
+						]}
+					>
+
+						<Input.TextArea
+							onChange={(e)=> setTeacher(e.target.value)}
+						/>
+
+					</Form.Item>
                     <Form.Item
-                        label="問題標籤"
+                        label="題目標籤"
                         rules={[
 							{
 								required: true,
@@ -119,16 +146,20 @@ export default function CreateProblem({courseName, username, isLogin}) {
 						]}
                     >
                     <Select
-                        mode="multiple"
+                        mode="tags"
                         showArrow
                         tagRender={tagRender}
                         style={{ width: '100%' }}
                         options={options}
                         onChange={(value)=>{console.log(value); setTags([...value])}}
-                    />
+                    >
+
+                    {children}
+
+                    </Select>
                     </Form.Item>
 					<Form.Item
-                        label="問題描述"
+                        label="題目描述"
                     >
                     <MDEditor
                         value={content}
@@ -166,10 +197,10 @@ export default function CreateProblem({courseName, username, isLogin}) {
                     </Form.Item>
 
                     <Form.Item
-                        label="問題答案"
+                        label="正確答案"
                     >
                     <MDEditor
-                        value={content}
+                        value={answer}
                         onChange={(val) => {
                             setAnswer(val);
                         }}
@@ -219,7 +250,9 @@ export default function CreateProblem({courseName, username, isLogin}) {
     </>
     );
 }
-const options = [{ value: 'solved', label:"solved", color:"gold" }, { value: 'midterm', label:"midterm", color:"lime" }, { value: 'final', label:"final", color:"green" }, { value: 'test', label:"test", color:"cyan" }]
+const options = [{ value: 'solved', label:"solved", color:"gold" }, { value: 'midterm', label:"midterm", color:"lime" }, { value: 'final', label:"final", color:"green" }, { value: 'test', label:"test", color:"cyan" }
+                ,{value: 'quiz', label:'quiz'} , {value: 'homework', label:'homework'} 
+]
 
 function tagRender(props) {
     const { label, value, closable, onClose, color } = props;
@@ -229,7 +262,7 @@ function tagRender(props) {
     };
     return (
         <Tag
-        color={value === "solved"? "gold" : value === "midterm"? "lime" : value === "final" ?"green": "cyan"}
+        color={value === "solved"? "gold" : value === "midterm"? "lime" : value === "final" ?"green": value === "test" ? "cyan" : value === "quiz" ? "red" : value === "homework" ? "orange" :"silver"}
         onMouseDown={onPreventMouseDown}
         closable={closable}
         onClose={onClose}

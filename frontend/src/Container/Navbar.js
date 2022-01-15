@@ -1,4 +1,4 @@
-import { message, Space, Button} from "antd"
+import { message, Space} from "antd"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Cookies from "js.cookie"
@@ -9,7 +9,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import logo from '../logo.png'
+import Button from "@mui/material/Button";
+import logo from '../logo2.png'
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+
+import LogoutIcon from '@mui/icons-material/Logout';
+
 import { width } from "@mui/system";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -63,39 +69,25 @@ const Navbare = ({memberName, isLogin, setMemberName, setIsLogin}) => {
 
     return (
     <>
-        {/* <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]} style={{ float: "right", width: "20%", marginRight: "5px" }}>
-            <Menu.Item key="2">
-            <Link to="/login" style={{ textDecoration: "none" }}>
-                {isLogin
-                ?
-                <>
-
-                    <Button onClick={onClick_Logout}> 登出</Button>
-                </>
-                :
-                "登入 / 註冊"}
-            </Link>
-            </Menu.Item>
-        </Menu> */}
         <Box sx={{ flexGrow: 1 }}>
             <ThemeProvider theme={darkTheme}>
             <AppBar position="static" enableColorOnDark>
                 <Toolbar>
-                {/* <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
-                    aria-label="menu"
-                    sx={{ mr: 2 }}
-                >
-                    <MenuIcon />
-                </IconButton> */}
-                <img src={logo} style={{width:"70px", height:"70px"}}/>
+                <div style={{width:"40%", justifyContent:"left", display:"flex"}}>
+                    <Link to="/" >
+                        <img src={logo} style={{width:"113px", height:"70px"}}/>
+                    </Link>
+                </div>
 
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} style={{justifyContent:'center'}}>
-                    Kaoguti Website
-                </Typography>
-                {isLogin ?
+
+                <div style={{width:"20%"}}>
+
+                    <Typography variant="h3" component="div" sx={{ flexGrow: 1 }} style={{justifyContent:'center'}}>
+                        KaoGuTi
+                    </Typography>
+
+                </div>
+                {/* {isLogin ?
 
                 <>
                     <Link to="/createProblem" style={{ textDecoration: "none" ,color:"white", paddingRight: "6px"}}> 
@@ -109,9 +101,61 @@ const Navbare = ({memberName, isLogin, setMemberName, setIsLogin}) => {
                 </>
 
                 :
-                <Link to="/login" style={{ textDecoration: "none" ,color:"white"}}>登入 / 註冊</Link>
+                <Link to="/login" style={{ textDecoration: "none" ,color:"white"}}>
+                    <Button>
+                    登入 / 註冊
+                    </Button>
+                    </Link>
+                } */}
+                {
+                isLogin?
+
+
+                <div style={{display:"flex", justifyContent:'right', width:"40%"}}>
+                    <div style={{display:"flex",justifyContent:'right', alignItems:"center"}}>
+                        <Link to="/createProblem" style={{ textDecoration: "none" ,color:"white"}}> 
+                            <Button variant="contained" startIcon={<AddCircleIcon />} color="primary">
+                                新增題目
+                            </Button>
+                        </Link>
+                    </div>
+                    <div style={{display:"flex",justifyContent:'right', alignItems:"center", marginLeft:"10px"}}>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} color="white" style={{display:"flex",justifyContent:'right', alignItems:"center"}}>
+                            Hi! {memberName}
+                        </Typography>
+                    </div>
+                    <IconButton
+                        size="large"
+                        edge="end"
+                        aria-label="logout"
+                        aria-haspopup="true"
+
+                    >
+                        <LogoutIcon color="white" />
+                    </IconButton>
+                </div>
+                :
+                <div style={{display:"flex", justifyContent:'right', width:"40%"}}>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} color="white" style={{display:"flex",justifyContent:'right', alignItems:"center"}}>
+                        登入
+                    </Typography>
+                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                        <Link to="/login">
+                            <IconButton
+                            size="large"
+                            edge="end"
+                            aria-label="account of current user"
+                            aria-haspopup="true"
+                            >
+                            <AccountCircle />
+                            </IconButton>
+                        </Link>
+                    </Box>
+                </div>
                 }
                 </Toolbar>
+
+                
             </AppBar>
             </ThemeProvider>
         </Box>

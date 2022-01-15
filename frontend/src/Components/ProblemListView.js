@@ -24,7 +24,7 @@ const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
                 dataSource={courseProblemData}
                 footer={
                     <div>
-                        <b>Copyright © 2021 NTU TEAM.</b>  All rights reserved.
+                        <b>Copyright © 2022 NTU KaoGuTi TEAM.</b>  All rights reserved.
                     </div>
                 }
                 renderItem={(item, index) => {

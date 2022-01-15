@@ -2,12 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Space, Tag } from 'antd';
 import { Card, Comment, Avatar, Form, Button, List, Input, Tooltip, message } from 'antd';
 import moment from 'moment';
-import ReactMarkdown from 'react-markdown'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import instance from '../api';
 import Replyicon from './Replyicon';
+import Markdown from './Markdown';
 
 
 import 'katex/dist/katex.min.css' 
@@ -124,13 +122,7 @@ const ProblemModal = ({ item, isLogin, memberName }) => {
                         author={<a style={{ fontSize: "20px" }}>{publisher}</a>}
                         avatar={<Avatar src={`https://joeschmoe.io/api/v1/${publisher}`} alt={publisher} />}
                         content={
-                            // <ReactMarkdown
-                            // children={item.content}
-                            // remarkPlugins={[remarkMath]}
-                            // rehypePlugins={[rehypeKatex]}
-                            // />
                             <MarkdownPreview source={description}/>
-                            // <p>hi</p>
                         }
                         datetime={(
                             <Tooltip title={moment(time).format('YYYY-MM-DD HH:mm:ss')}>
@@ -257,3 +249,4 @@ const CommentBlock = ({ problem_id, memberName, setreplyList, newReply, setNewRe
         </>
     )
 }
+
