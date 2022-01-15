@@ -237,7 +237,8 @@ router.post('/search/course', async (req, res) => {
             tags: problems[i].tags,
             publisher: problems[i].publisher,
             able_to_like: !(problems[i].likes.includes(username))||!(username),
-            time: problems[i].time
+            time: problems[i].time,
+            answers_num: (await Answer.find({problem_id: problems[i].problem_id})).length
         }
     }
     res.json(problems)
