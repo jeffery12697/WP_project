@@ -5,7 +5,6 @@ import 'katex/dist/katex.css'
 import { Typography, Button, Input, message, Form, Space, Card, Select, Tag} from 'antd'
 import { Link } from "react-router-dom";
 import instance from '../api';
-import AnimatedMulti from '../Components/Tags'
 import { style } from '@mui/system';
 
 const { Option } = Select;

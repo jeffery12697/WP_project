@@ -3,6 +3,12 @@ import { Form,  Input,  Row, Col,  Checkbox,  Button,  message,} from 'antd';
 import { useState } from "react";
 // import {setVerifyCode, createUser} from "../api/User"
 import instance from "../api";
+import sha256 from 'crypto-js/sha256';
+
+
+
+
+
 
 
 const Register = ( {setLoginOrRegister} ) => {
@@ -33,6 +39,7 @@ const Register = ( {setLoginOrRegister} ) => {
 	
   const handleRegister = async () => {
     if (email.length > 0 && captcha.length > 0 && nickname.length > 0 && password.length > 0) {
+      const hashDigest = sha256(password);
       try {
         const {
           data: { msg },
@@ -40,7 +47,7 @@ const Register = ( {setLoginOrRegister} ) => {
           mail: email,
           vcode: captcha,
           username: nickname,
-          password
+          password:hashDigest
         });
         console.log(msg);
         return msg
