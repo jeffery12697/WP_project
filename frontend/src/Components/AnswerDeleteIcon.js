@@ -5,12 +5,9 @@ import instance from '../api';
 
 
 
-const Replyicon = ({user_likes, iconNum, memberName, answer_id, newLike, setNewLike}) => {
 
+const AnswerDeleteIcon = ({memberName, answer_id, deleteAnswer, setDeleteAnswer}) => {
 
-    const [pressColor, setpressColor] = useState(memberName? !user_likes : user_likes)
-
-    const [showText, setshowText] = useState(iconNum)
 
     const displayStatus = (payload) => {
 		if (payload.msg) {
@@ -28,11 +25,12 @@ const Replyicon = ({user_likes, iconNum, memberName, answer_id, newLike, setNewL
 		}
 	}
 
-    const handleLikeProblem = async () => {
+    const handleDeleteAnswer = async () => {
         try {
+            // console.log("sdfeijfeijkoe")
             const {
                 data: { msg },
-            } = await instance.post('/like/answer', {
+            } = await instance.post('/hide/answer', {
                 username: memberName,
                 answer_id
             });
@@ -41,11 +39,8 @@ const Replyicon = ({user_likes, iconNum, memberName, answer_id, newLike, setNewL
 				type: "success",
 				msg: msg,
 			});
-            setNewLike(newLike+1);
         }
         catch (error) {
-            // console.error(error)
-            // console.log(error.response.data.msg)
             displayStatus({
 				type: "error",
 				msg: error.response.data.msg,
@@ -60,23 +55,18 @@ const Replyicon = ({user_likes, iconNum, memberName, answer_id, newLike, setNewL
             message.info('請先登入ㄛ')
             return
         }
-        
-        setpressColor(prev => !prev)
-        setshowText(prev => prev + (pressColor ? -1 : 1))
-        await handleLikeProblem()
-
-        
+        await handleDeleteAnswer()
+        setDeleteAnswer(deleteAnswer+1)
     }
 
     return (
         <Space >
-            <div style={pressColor ? { color: 'blue' } : null} >
-                {React.createElement(LikeOutlined, { onClick: pressButton })}
+            <div style={{paddingLeft:"10px"}}>
+                {React.createElement(DeleteOutlined, { onClick: pressButton })}
             </div>
-            {showText}
         </Space >
     );
 
 }
 
-export default Replyicon
+export default AnswerDeleteIcon

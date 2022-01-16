@@ -9,12 +9,13 @@ const CoursePage = ({courseName, isLogin, memberName}) => {
     const [courseProblemData, setCourseProblemData] = useState([]);
 	const [teacher, setTeacher] = useState("");
 	const [tags, setTags] = useState([]);
+	const [deleteion, setDeletion] = useState(0);
 
 	useEffect(async () => {
 		if (courseName) {
 			await handleSearchCourse()
 		}
-	}, [courseName]);
+	}, [courseName, deleteion]);
 
 	const displayStatus = (payload) => {
 		if (payload.msg) {
@@ -33,7 +34,7 @@ const CoursePage = ({courseName, isLogin, memberName}) => {
 	}
 
 	const handleSearchCourse = async () => {
-		console.log(courseName);
+		// console.log(courseName);
         try {
             const { data } = await instance.post('/search/course', {
 				course_name: courseName,
@@ -41,12 +42,12 @@ const CoursePage = ({courseName, isLogin, memberName}) => {
 				tags,
 				username: memberName
             });
-            console.log(data)
+            // console.log(data)
 			setCourseProblemData(data)
         } 
         catch (error) {
             // console.error(error)
-            console.log(error.response.data.msg)
+            // console.log(error.response.data.msg)
 			displayStatus({
 				type: "error",
 				msg: error.response.data.msg,
@@ -60,7 +61,7 @@ const CoursePage = ({courseName, isLogin, memberName}) => {
 				courseName
 					?
 					<div style={{display: "flex", justifyContent: "center"}}>
-						<ProblemListView courseProblemData={courseProblemData} isLogin={isLogin} memberName={memberName}/>
+						<ProblemListView courseProblemData={courseProblemData} isLogin={isLogin} memberName={memberName} deleteion={deleteion} setDeletion={setDeletion}/>
 					</div>
 					:
 					null

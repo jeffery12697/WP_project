@@ -4,6 +4,8 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { link, Redirect } from '@uiw/react-md-editor';
 // import { getMail, loginCheck } from '../api/User';
 import instance from '../api';
+import sha256 from 'crypto-js/sha256'
+import { Link } from 'react-router-dom';
 
 
 const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, islogin }) => {
@@ -12,14 +14,14 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, i
 
 	const Submit = async (values) => {
 		let msg = await handleLogin();
-		console.log(msg)
+		// console.log(msg)
 		if (msg === "Success!") {
 			displayStatus({
 				type: "success",
 				msg: msg,
 			});
 			setIsLogin(true);
-			setMemberName(values.username);
+			setMemberName(username);
 		}
 		else {
 			// alert(msg)
@@ -56,19 +58,24 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, i
             return
         }
         if (username.length > 0 && password.length > 0) {
-            try {
+            const hashDigest = sha256(password)
+			let hash = ''
+			for (let i=0; i<hashDigest.words.length; i++) {
+				hash += hashDigest.words[i].toString()
+			}
+			// console.log(hash)
+			try {
                 const {
                     data: { msg },
                 } = await instance.post('/user/login', {
                     username,
-                    password
+                    password: hash
                 });
-                console.log(msg);
 				return msg;
             }
             catch (error) {
                 // console.error(error)
-                console.log(error.response.data.msg)
+                // console.log(error.response.data.msg)
 				return error.response.data.msg
             }
         }
@@ -142,7 +149,7 @@ const Login = ({ setMemberName, setIsLogin, setLoginOrRegister, setMemberMail, i
 
 					<Form.Item>
 						<Space>
-							<Button type="primary" htmlType="submit" className="login-form-button" onClick>
+							<Button type="primary" htmlType="submit" className="login-form-button" onClick={Submit}>
 								登入
 							</Button>
 							<p>

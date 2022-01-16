@@ -31,15 +31,15 @@ function tagRender(props) {
 }
 
 
-const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
+const ProblemListView = ({ courseProblemData, isLogin, memberName, deleteion, setDeletion}) => {
 
     const [filterCourseProblemData, setFilterCourseProblemData] = useState([...courseProblemData])
-
+    
     useEffect(() => {
 
         setFilterCourseProblemData([...courseProblemData])
 
-    }, [courseProblemData])
+    }, [courseProblemData, deleteion])
     return (
         <div style={{display: "flex", justifyContent: "center", flexDirection:"column", width: "100%"}}>
             <Form >
@@ -51,7 +51,7 @@ const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
                         style={{ width: '50%' }}
                         options={options}
                         onChange={(value)=>{
-                            console.log(value)
+                            // console.log(value)
 
                             if(value.length === 0){
                                 setFilterCourseProblemData([...courseProblemData])
@@ -78,7 +78,7 @@ const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
                             // }
                             for(let i = 0; i < courseProblemData.length; i++){
                                 for(let k = 0; k < value.length; k++){
-                                    if(courseProblemData[i].title.includes(value[k])){
+                                    if(courseProblemData[i].title.replace(/ /g, "").includes(value[k])){
                                         if (!filterData.includes(courseProblemData[i])) filterData.push(courseProblemData[i])
                                     }
                                     else if(courseProblemData[i].teacher.includes(value[k])){
@@ -108,7 +108,7 @@ const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
                     size="large"
                     pagination={{
                         onChange: page => {
-                            console.log(page);
+                            // console.log(page);
                         },
                         pageSize: 8,
                     }}
@@ -126,10 +126,10 @@ const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
                                 className="problemCard"
                                 key={item.problem_id}
                                 actions={[
-                                    <IconText icon={LikeOutlined} iconNum={item.likes_num} key="list-vertical-like-o" user_likes={item.able_to_like} memberName={memberName} problem_id={item.problem_id}/>,
-                                    <IconText icon={MessageOutlined} iconNum={item.answers_num} key="list-vertical-message" user_likes={item.able_to_like} memberName={memberName} problem_id={item.problem_id}/>,
-                                    (memberName == item.publisher && false) ?
-                                        <IconText icon={DeleteOutlined} iconNum={""} key="list-vertical-message" memberName={memberName} problem_id={item.problem_id}/>
+                                    <IconText icon={LikeOutlined} iconNum={item.likes_num} key="list-vertical-like-o" user_likes={item.able_to_like} memberName={memberName} problem_id={item.problem_id} deleteion={deleteion} setDeletion={setDeletion}/>,
+                                    <IconText icon={MessageOutlined} iconNum={item.answers_num} key="list-vertical-message" user_likes={item.able_to_like} memberName={memberName} problem_id={item.problem_id} deleteion={deleteion} setDeletion={setDeletion}/>,
+                                    (memberName == item.publisher) ?
+                                        <IconText icon={DeleteOutlined} iconNum={""} key="list-vertical-message" memberName={memberName} problem_id={item.problem_id} deleteion={deleteion} setDeletion={setDeletion}/>
                                         : null
 
                                 ]}
@@ -142,7 +142,7 @@ const ProblemListView = ({ courseProblemData, isLogin, memberName}) => {
                                 //     />
                                 // }
                             >
-                            <ProblemModal item={item} isLogin={isLogin} memberName={memberName} />
+                            <ProblemModal item={item} isLogin={isLogin} memberName={memberName}/>
                             </List.Item>
 
                         )

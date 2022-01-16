@@ -3,6 +3,8 @@ import { Form,  Input,  Row, Col,  Checkbox,  Button,  message,} from 'antd';
 import { useState } from "react";
 // import {setVerifyCode, createUser} from "../api/User"
 import instance from "../api";
+import sha256 from 'crypto-js/sha256'
+import { stripIgnoredCharacters } from "graphql";
 
 
 const Register = ( {setLoginOrRegister} ) => {
@@ -14,7 +16,7 @@ const Register = ( {setLoginOrRegister} ) => {
 
   const submit = async (values) => {
     let msg = await handleRegister();
-		console.log(msg)
+		// console.log(msg)
 		if (msg === "User created") {
 			displayStatus({
 				type: "success",
@@ -33,6 +35,12 @@ const Register = ( {setLoginOrRegister} ) => {
 	
   const handleRegister = async () => {
     if (email.length > 0 && captcha.length > 0 && nickname.length > 0 && password.length > 0) {
+      const hashDigest = sha256(password)
+      let hash = ''
+      for (let i=0; i<hashDigest.words.length; i++) {
+        hash += hashDigest.words[i].toString()
+      }
+      // console.log(hash)
       try {
         const {
           data: { msg },
@@ -40,14 +48,14 @@ const Register = ( {setLoginOrRegister} ) => {
           mail: email,
           vcode: captcha,
           username: nickname,
-          password
+          password: hash
         });
-        console.log(msg);
+        // console.log(msg);
         return msg
       }
       catch (error) {
         // console.error(error)
-        console.log(error.response.data.msg)
+        // console.log(error.response.data.msg)
         return error.response.data.msg
       }
     }
@@ -107,12 +115,12 @@ const Register = ( {setLoginOrRegister} ) => {
         } = await instance.post('/user/set_verify_code', {
           mail: email
         });
-        console.log(msg);
+        // console.log(msg);
         return msg
       }
       catch (error) {
         // console.error(error)
-        console.log(error.response.data.msg)
+        // console.log(error.response.data.msg)
         return error.response.data.msg
       } 
     }
@@ -186,14 +194,6 @@ const Register = ( {setLoginOrRegister} ) => {
               required: true,
               message: '請輸入您的email!',
             },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('email').indexOf("@ntu.edu.tw") !== -1) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error('請使用台大信箱註冊!'));
-              },
-            })
           ]}
         >
           <Input onChange={onChangeEmail}/>
@@ -239,11 +239,11 @@ const Register = ( {setLoginOrRegister} ) => {
 
         <Form.Item
           name="nickname"
-          label="暱稱"
+          label="使用者名稱"
           rules={[
             {
               required: true,
-              message: '請輸入您的暱稱!',
+              message: '請輸入您的使用者名稱!',
               whitespace: true,
             },
           ]}
@@ -251,7 +251,7 @@ const Register = ( {setLoginOrRegister} ) => {
           <Input onChange={onChangeNickname}/>
         </Form.Item>
 
-        <Form.Item label="驗證碼"  tooltip="點擊右側獲取驗證碼後，請去第一欄填的信箱收信" extra="請使用 @ntu.edu.tw 信箱註冊">
+        <Form.Item label="驗證碼"  tooltip="點擊右側獲取驗證碼後，請去第一欄填的信箱收信" extra="請勿使用 @ntu.edu.tw 信箱註冊\n(已被計中封鎖了)">
           <Row gutter={8}>
             <Col span={12}>
               <Form.Item

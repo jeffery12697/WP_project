@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import connectMongoDB from './mongo.js'
-import router from './routes/api'
+import router from './routes/api.js'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 
