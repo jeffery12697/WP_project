@@ -2,13 +2,13 @@ import express from 'express'
 import nodemailer from 'nodemailer'
 import dotenv from "dotenv-defaults"
 import bcrypt from "bcrypt"
-import User from '../models/User'
-import Vcode from '../models/Vcode'
+import User from '../models/User.js'
+import Vcode from '../models/Vcode.js'
 import { v4 as uuidv4 } from 'uuid'
-import Course from '../models/Course'
-import Problem from '../models/Problem'
-import Answer from '../models/Answer'
-import Cookie from '../models/Cookie'
+import Course from '../models/Course.js'
+import Problem from '../models/Problem.js'
+import Answer from '../models/Answer.js'
+import Cookie from '../models/Cookie.js'
 
 dotenv.config();
 
@@ -52,7 +52,11 @@ router.post('/user/set_verify_code', async (req, res) => {
         from: process.env.EMAIL_ADDRESS,
         to: email,
         subject: 'KaoGuTi Website verification code',
-        text: 'Your verification code is: ' + vcode
+        text: 'Welcome to KaoGuTi Website.\nYour verification code is: ' + vcode + 
+            '\nEnjoy your journey!\nIn case of any problem,\ncontact us via ' + process.env.EMAIL_ADDRESS +
+            '\nThank you for the support!\n\n歡迎使用KaoGuTi網站，\n您的驗證碼為: ' + vcode +
+            '\n祝您有個美好的體驗!\n有任何問題，\n請透過' + process.env.EMAIL_ADDRESS +
+            '與我們聯絡。\n謝謝您的支持!'
     }
       
     transporter.sendMail(mailOptions, function(error, info){
@@ -175,11 +179,11 @@ router.post('/create/problem', async (req, res) => {
     const content = req.body.answer
     const time = Date()
     try {
-        const newProblem = new Problem({ course_id, problem_id, title, description, tags, teacher, publisher, likes, time })
+        const newProblem = new Problem({ course_id, problem_id, title, description, tags, teacher, publisher, likes, time, show: true })
         await newProblem.save()
         if (content) {
             const answer_id = uuidv4()
-            const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes, time })
+            const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes, time, show: true })
             await newAnswer.save()
         }
         res.json({msg: 'Problem created'})
@@ -200,10 +204,45 @@ router.post('/create/answer', async (req, res) => {
     const likes = []
     const time = Date()
     try {
-        const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes, time })
+        const newAnswer = new Answer({ problem_id, answer_id, content, publisher, likes, time, show: true })
         await newAnswer.save()
         res.json({msg: 'Answer created'})
     } catch (e) { throw new Error("Answer creation error")}
+
+    const problem = await Problem.findOne({ problem_id: problem_id })
+    const problem_publisher = problem.publisher
+    if (problem_publisher!==username) {
+        const email = (await User.findOne({ username: problem_publisher })).email
+    
+        var transporter = nodemailer.createTransport({
+            service: process.env.EMAIL_SERVICE,
+            auth: {
+              user: process.env.EMAIL_ADDRESS,
+              pass: process.env.EMAIL_PASSWORD
+            }
+        })
+          
+        var mailOptions = {
+            from: process.env.EMAIL_ADDRESS,
+            to: email,
+            subject: 'KaoGuTi Website Notification',
+            text: 'Dear ' + problem_publisher + ',\nYour problem ' + problem.title + 
+                ' has received a new answer from ' + username + 
+                '!\nYou can check it on our website at https://kaoguti.herokuapp.com/. \nIn case of any problem,\ncontact us via ' + 
+                process.env.EMAIL_ADDRESS + '\nThank you for the support!\n\n' + problem_publisher + 
+                '先生/小姐您好，\n您的問題' + problem.title + '獲得了' + username + 
+                '的一則答覆，\n您可以在我們的網站 https://kaoguti.herokuapp.com/ 上查看。\n有任何問題，\n請透過' + 
+                process.env.EMAIL_ADDRESS + '與我們聯絡。\n謝謝您的支持!'
+        }
+          
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+        })
+    }
 })
 
 router.get('/search', async (req, res) => {
@@ -225,9 +264,9 @@ router.post('/search/course', async (req, res) => {
     const teacher = req.body.teacher
     const tags = req.body.tags
     const username = req.cookies.username
-    let problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}}).sort({time:-1})
+    let problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, tags: {$all: tags}, show: true}).sort({time:-1})
     if (tags.length===0) {
-        problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}}).sort({time:-1})
+        problems = await Problem.find({course_id: course_id, teacher: {$regex: teacher}, show: true}).sort({time:-1})
     }
     for (let i=0; i<problems.length; i++) {
         problems[i] = {problem_id: problems[i].problem_id,
@@ -238,7 +277,7 @@ router.post('/search/course', async (req, res) => {
             publisher: problems[i].publisher,
             able_to_like: !(problems[i].likes.includes(username))||!(username),
             time: problems[i].time,
-            answers_num: (await Answer.find({problem_id: problems[i].problem_id})).length
+            answers_num: (await Answer.find({problem_id: problems[i].problem_id, show: true})).length
         }
     }
     res.json(problems)
@@ -248,7 +287,7 @@ router.get('/problem', async (req, res) => {
     const problem_id = req.query.problem_id
     const username = req.cookies.username
     const problem = await Problem.findOne({problem_id: problem_id})
-    const answers = await Answer.find({problem_id: problem_id})
+    const answers = await Answer.find({problem_id: problem_id, show: true})
     for (let i=0; i<answers.length; i++) {
         answers[i] = {answer_id: answers[i].answer_id,
             content: answers[i].content,
@@ -318,6 +357,38 @@ router.post('/like/answer', async(req, res) => {
         const likes = answer.likes
         await Answer.updateOne({ answer_id: answer_id }, { $set: { likes: likes }})
     } catch (e) { throw new Error("Answer liking error")}
+})
+
+router.post('/hide/problem', async(req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (!await Cookie.findOne({ username: username, token: token })) {
+        res.json({ msg: 'Wrong cookie token' })
+        return
+    }
+    const problem_id = req.body.problem_id
+    if (await Problem.findOne({ problem_id: problem_id, publisher: username })) {
+        await Problem.updateOne({ problem_id: problem_id, publisher: username }, { $set: { show: false } })
+        res.json({msg: 'success'})
+    } else {
+        res.status(400).send({ msg: "error" })
+    }
+})
+
+router.post('/hide/answer', async(req, res) => {
+    const username = req.cookies.username
+    const token = req.cookies.token
+    if (!await Cookie.findOne({ username: username, token: token })) {
+        res.json({ msg: 'Wrong cookie token' })
+        return
+    }
+    const answer_id = req.body.answer_id
+    if (await Answer.findOne({ answer_id: answer_id, publisher: username })) {
+        await Answer.updateOne({ answer_id: answer_id, publisher: username }, { $set: { show: false } })
+        res.json({msg: 'success'})
+    } else {
+        res.status(400).send({ msg: "error" })
+    }
 })
 
 export default router
